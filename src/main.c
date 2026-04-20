@@ -1,0 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "processor.h"
+#include "parser.h"
+#include "registers.h"
+#include "sreg.h"
+#include "pipeline_if_id.h"
+#include "alu_hazards.h"
+#include "flush.h"
+#include "output.h"
