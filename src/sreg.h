@@ -6,6 +6,13 @@
 #include <stdint.h>
 #include "processor.h"
 
+// Bit masks for SREG flags
+#define FLAG_C_MASK 0b00010000  // Bit 4
+#define FLAG_V_MASK 0b00001000  // Bit 3
+#define FLAG_N_MASK 0b00000100  // Bit 2
+#define FLAG_S_MASK 0b00000010  // Bit 1
+#define FLAG_Z_MASK 0b00000001  // Bit 0
+#define SREG_CLEAR_MASK 0b00011111 // Keeps bits 7:5 zero
 
 
 
