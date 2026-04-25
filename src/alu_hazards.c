@@ -5,7 +5,7 @@
 #include "registers.h"
 #include "sreg.h"
 #include "flush.h"
-
+#include "pipeline_if_id.h" 
 // ALU operations 
 
 // arithmetic operations
@@ -41,13 +41,91 @@ int8_t alu_sar(int8_t a, int8_t imm){return (int8_t)(a>>imm);}
 
 // Hazard detection: inspect ID/EX vs previous EX result.
 // should be in the beginning of ex or end of decoding
-HazardType detect_hazard(ProcessorState *state);
+HazardType detect_hazard(ProcessorState *state) {
+    // Need a valid previous EX result AND a valid incoming instruction
+    if (!state->ex_out.valid || !state->id_ex.valid)
+        return HAZARD_NONE;
+
+    // old value of previoys ex reg 
+    int dest = state->ex_out.dest_reg;
+
+    // NONE CASES
+    // dest == -1 means previous instruction had no writeback (SB/BEQZ/JR).
+    // dest == 0 is R0
+    if (dest <= 0)
+        return HAZARD_NONE;
+
+    int r1  = state->id_ex.r1;
+    int r2  = state->id_ex.r2;
+    int fmt = state->id_ex.format; // format I or R
+
+    // Check if any source register of the current instruction
+    // depends on the destination of the previous instruction. */
+    
+    int r1_hazard = (r1 == dest);
+    int r2_hazard = (fmt == FORMAT_R) && (r2 == dest);
+
+    if (!r1_hazard && !r2_hazard)
+        return HAZARD_NONE;
+
+// Decide forward or stall
+// mi4 3arfa ana b3mel eh bs stall for LD
+// If the previous instruction wrote to a register that the current instruction reads, we have a RAW hazard.
+    if(state->id_ex.opcode == LB) {
+        // load-use hazard: if current instruction is a load, we cannot forward from EX because the data won't be ready until the end of EX stage. We must stall.
+        return HAZARD_STALL;
+    }else if (state->ex_out.dest_reg != -1 && // previous wrote a reg
+        state->id_ex.opcode != LB)            // current is not a load itself
+    {
+        return HAZARD_FORWARD_EX;
+    }
+
+    // forward for all other cases
+    return HAZARD_FORWARD_EX;
+}
+
 
 // Apply forwarding: patch val_r1/val_r2 in ID/EX before ALU executes.
-void apply_forwarding(ProcessorState *state);
+void apply_forwarding(ProcessorState *state) {
+    if (!state->ex_out.valid)
+        return;
+
+    // get the previous EX destination and result for forwarding 
+    int    dest = state->ex_out.dest_reg;
+    int8_t val  = state->ex_out.result;
+
+    if (dest <= 0) // r0 is unchangable in pack 4 soo  nothing meaningful to forward
+        return; 
+
+    // does R1 need patching? current value in ID_EX is the same as the destination of the previous EX, 
+    // so we can forward the result to val_r1
+    if (state->id_ex.r1 == dest) {
+        printf("  [HZRD, FWD] EX->EX: R%d=%d forwarded to val_r1\n", dest, (int)val);
+        state->id_ex.val_r1 = val;
+    }
+
+    // does R2 need patching? current value in ID_EX is the same as the destination of the previous EX, 
+    // so we can forward the result to val_r2
+    // only for R-format anyway
+    if (state->id_ex.format == FORMAT_R && state->id_ex.r2 == dest) {
+        printf("  [HZRD, FWD] EX->EX: R%d=%d forwarded to val_r2\n", dest, (int)val);
+        state->id_ex.val_r2 = val;
+    }
+}
 
 // Insert stall cycle: freeze IF/ID, insert bubble into ID/EX.
-void insert_stall(ProcessorState *state);
+void insert_stall(ProcessorState *state) {
+    printf("  [HZRD, STALL] bubbling ID_EX, freezing IF/ID\n");
+
+    // Insert bubble into ID/EX: marks it invalid so EX does nothing
+    insert_bubble_id_ex(state); // 3nd hana fel pipeline_IF_ID
+
+    // "freezing the pipeline" 
+    // Undo the PC increment from the last fetch so that IF will
+    // re-fetch the same instruction next cycle ()
+    if (state->pc > 0)
+        state->pc--;
+}
 
 // STAGE EX ITSELF stage_EX FUNCTION
 // 3. IF CONDITION 
@@ -66,7 +144,9 @@ void insert_stall(ProcessorState *state);
 //   - if taken, call flush_pipeline to invalidate IF/ID and ID/EX, set PC to target (NEXT CYCLE PREPARATION)
 // 4. Store EX result in pipeline register for forwarding to next cycle (EX_Result struct) - this will be used by the next cycle's hazard detection and forwarding logic. (NEXT CYCLE PREPARATION)
 
-void stage_EX(ProcessorState *state);
+void stage_EX(ProcessorState *state){
+    
+}
 
 
 ////////////////////////////////////////////////////////

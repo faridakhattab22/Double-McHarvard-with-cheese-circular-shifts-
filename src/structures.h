@@ -1,3 +1,6 @@
+#ifndef STRUCTURES_H
+#define STRUCTURES_H
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,3 +48,5 @@ typedef struct {
     ID_EX_Reg  id_ex; // inst. Decode
     EX_Result  ex_out; // exec. result
 } ProcessorState;
+
+#endif 
