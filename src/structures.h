@@ -1,3 +1,6 @@
+
+#include "processor.h"
+
 // Pipeline registers between stages
 typedef struct {
     uint16_t instruction;   // raw 16-bit binary

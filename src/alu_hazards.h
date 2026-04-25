@@ -4,12 +4,6 @@
 #define ALU_HAZARDS_H
 
 #include <stdint.h>
-#include <stdio.h>
-#include "processor.h"
-#include "registers.h"
-#include "sreg.h"
-#include "flush.h"      // M5 calls evaluate_branch from M6
-
 
 // Execute stage: performs ALU op, writeback, calls updateSREG.
 void stage_EX(ProcessorState *state);
