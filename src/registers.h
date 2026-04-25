@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "processor.h"
-
+#include "structures.h"
 
 
 // --- 
@@ -26,5 +26,6 @@ void     incrementPC(ProcessorState *state);   // PC++
 // --- Init ---
 void    init_registers(ProcessorState *state);  // zero all regs, PC=0
 void    init_data_memory(ProcessorState *state); // zero all data mem
+void    init_inst_memory(ProcessorState *state); // zero all data mem
 
 #endif
