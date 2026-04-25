@@ -14,10 +14,10 @@ typedef enum {
 } Opcode;
 
 typedef enum {
-    FORMAT_R,   // opcode | R1 | R2
+    FORMAT_R,   // opcode | R1 | R2  
     FORMAT_I    // opcode | R1 | IMMEDIATE
 } InstructionFormat;
-
+//both 4,6,6
 typedef enum {
     HAZARD_NONE,
     HAZARD_STALL,
