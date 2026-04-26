@@ -7,8 +7,7 @@
 #include <string.h>
 #include "processor.h"
 #include "registers.h"
-
-
+#include "structures.h"
 
 
 
@@ -26,7 +25,9 @@ void decode_instruction(uint16_t raw, Opcode *opcode, InstructionFormat *fmt,
 // Sign-extend a 6-bit immediate to int8_t (2's complement).
 int8_t sign_extend_6(uint8_t imm6);
 
-// Insert a bubble (NOP) into ID/EX — used on stall or flush.
+// Insert a bubble (NOP) into ID/EX — used on stall or fluoksh.
 void insert_bubble_id_ex(ProcessorState *state);
+
 void insert_bubble_if_id(ProcessorState *state);
+
 #endif
