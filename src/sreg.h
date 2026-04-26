@@ -24,8 +24,8 @@ void updateSREG(ProcessorState *state, Opcode op,
 // Individual flag checks (used internally by updateSREG)
 int  compute_carry(int8_t val1, int8_t val2, Opcode op);
 int  compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op);
-int  compute_negative(int8_t result);
-int  compute_zero(int8_t result);
+int  compute_negative(int8_t result); // flag N bit 2
+int  compute_zero(int8_t result);  //flag zero bit 0 
 // Sign flag S = N XOR V (computed inside updateSREG)
 
 // Read individual flags from SREG byte
