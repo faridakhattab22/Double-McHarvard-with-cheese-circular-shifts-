@@ -2,7 +2,7 @@
 
 /* C(carry) updated by add 
 V(overflow) by add , sub 
-N(negative) by kolo  add ,sub,mul,and,or,sal,sar
+N(negative) by kolo  add,sub,mul,and,or,sal,sar
 S(sign) add w sub 
 Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
 */
@@ -16,16 +16,16 @@ Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
 // carry bit 4 
 int  compute_carry(int8_t val1, int8_t val2, Opcode op){
      if (op != ADD){
-         return -1; // carry gets updated only by add
+         return -1; // carry gets updated only by add 
      }
      // for negative numbers el mafrod en C maslan law -5 it stores it in 32 bits ya3ni beykamel el ba2i b ones fa 3shan keda lazem nestakhdem uint8_t
-     int temp1 = (uint8_t)val1;
-    int temp2 = (uint8_t)val2;
+    int temp1 = (int8_t)val1;
+    int temp2 = (int8_t)val2;
     int result = temp1 + temp2;
 
-    // el 8 bits le7ad 255 in decimal so 
-    if (result > 255) {
-    return 1;
+    // el 8 bits le7ad 255 in decimal so  
+    if (result > 255) { //check el condition beta3et el hexa number tani keda
+    return 1;     //SHOFI DI TANI  
 }
 return 0;
 
@@ -37,7 +37,7 @@ int  compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op){
         return -1;
     }
 
-    // for cases like 100+100=200  and -100+-100= - 200 w el range of 8 bit is -128 to 128 
+    // for cases like 100+100=200  and -100+-100=-200 w el range of 8 bit is -128 to 128 
     if (val1 > 0 && val2 > 0 && result < 0){
         return 1 ;
     }
