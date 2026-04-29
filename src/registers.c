@@ -25,7 +25,7 @@ void    writeReg(ProcessorState *state, int idx, int8_t value){ // hns2al tany
 
 
 /* --- Data memory (byte-addressable, 2048 × 8-bit) --- */
-uint8_t readMem (ProcessorState *state, uint16_t addr){
+uint8_t read_data_Mem (ProcessorState *state, short int addr){
      if (addr < 0 ){
      return 0; // invalid address checking 
     }
@@ -40,7 +40,7 @@ uint8_t readMem (ProcessorState *state, uint16_t addr){
 
 }
 /* --- Instruction memory (byte-addressable, 1024 × 16-bit) --- */
-uint8_t readMem (ProcessorState *state, uint16_t addr){ // mmkn t7tagoha f fetching el instruction
+short int  read_inst_Mem (ProcessorState *state, short int addr){ // mmkn t7tagoha f fetching el instruction
      if (addr < 0 ){
      return 0; // invalid address checking 
     }
@@ -49,15 +49,15 @@ uint8_t readMem (ProcessorState *state, uint16_t addr){ // mmkn t7tagoha f fetch
      return 0; // invalid address checking 
     }
     else {
-        return state->data_mem[addr]; //simple ya3ny
+        return state->instr_mem[addr]; //simple ya3ny
 
     }
 
 }
 /* --- Data memory (byte-addressable, 2048 × 8-bit) --- */
-void    writeMem(ProcessorState *state, uint16_t addr, uint8_t value){
+void    write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
     if (addr < 0 ){
-     return 0; // invalid address checking 
+     return ; // invalid address checking 
     }
     if (addr > 2047) {
         fprintf(stderr, "[WARN] Data memory write out of range: %u\n", addr);
@@ -70,28 +70,30 @@ void    writeMem(ProcessorState *state, uint16_t addr, uint8_t value){
 
 }
 /* --- Instruction memory (byte-addressable, 1024 × 16-bit) --- */
-void    writeMem(ProcessorState *state, uint16_t addr, uint16_t value){ // mmkn t7tagoha f el parsing f elawel
+void    write_inst_Mem(ProcessorState *state, short int addr, short int value){ // mmkn t7tagoha f el parsing f elawel
     if (addr < 0 ){
-     return 0; // invalid address checking 
+     return ; // invalid address checking 
     }
     if (addr > 1023) {
         fprintf(stderr, "[WARN] Instruction memory write out of range: %u\n", addr);
         return;
     }
     else{
-    state->data_mem[addr] = value;
+    state->instr_mem[addr] = value;
 
     }
 
 }
 
 /* --- PC helpers --- */
-uint16_t getPC      (ProcessorState *state){
+short int getPC      (ProcessorState *state){
     return state->pc;
 }
-void     setPC      (ProcessorState *state, uint16_t value){
+
+void     setPC      (ProcessorState *state, short int value){
     state->pc = value;
 }
+
 void     incrementPC(ProcessorState *state){
     state->pc++;
 }

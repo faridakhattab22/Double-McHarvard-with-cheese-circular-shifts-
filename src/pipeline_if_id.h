@@ -20,7 +20,7 @@ void stage_IF(ProcessorState *state);
 void stage_ID(ProcessorState *state);
 
 // Decode raw 16-bit instruction into both R-format and I-format fields.
-void decode_instruction(uint16_t raw, Opcode *opcode, InstructionFormat *fmt,
+void decode_instruction(short int raw, Opcode *opcode, InstructionFormat *fmt,
                         int *r1, int *r2, int8_t *imm);
 
 // Sign-extend a 6-bit immediate to int8_t (2's complement).

@@ -13,7 +13,7 @@
 int  parse_file(const char *filename, ProcessorState *state);
 
 // Encode a single assembly line to its 16-bit binary representation.
-uint16_t encode_instruction(const char *line);
+short int encode_instruction(const char *line);
 
 // Map mnemonic string to Opcode enum.
 Opcode   mnemonic_to_opcode(const char *mnemonic);
