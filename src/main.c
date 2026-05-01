@@ -2,37 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "processor.h"
-#include "parser.h"
+#include "structures.h"
 #include "registers.h"
-#include "sreg.h"
-#include "pipeline_if_id.h"
-#include "alu_hazards.h"
-#include "flush.h"
 #include "output.h"
-
-// Main Logic 
-
-
- 
-
-
-// send assembly file to parser 
-
-
-// while theres no instructions left 
-
-    // execute 
-    // print EX stage
-
-    // decode
-    // print ID stage
-
-    // fetch
-    // print IF stage
-
-    // print all registers, SREG
-    // instructions memory, data memory
-
+#include "pipeline_if_id.h"
+#include "parser.h"
+#include "flush.h"
+#include "alu_hazards.h"
 int main(void) {
     // initialise processor,registers (start as bubbles) including Sreg in initialisation
     // instructions memory +  Data memory
@@ -63,7 +39,7 @@ int main(void) {
     print_instruction_memory(&state);
 
     // ── Pipeline loop ─────────────────────────────────────────────────────────
-    while (state->pc <= state->instr_count) {
+    while (state.pc <= state.instr_count) {
         print_cycle_header(state.clock_cycle);
 
         stage_EX(&state);

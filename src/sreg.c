@@ -1,3 +1,5 @@
+#include "structures.h"
+#include "processor.h"
 #include "sreg.h"
 
 /* C(carry) updated by add 

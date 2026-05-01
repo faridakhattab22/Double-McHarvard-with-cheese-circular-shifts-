@@ -53,7 +53,7 @@ void insert_stall(ProcessorState *state) {
     state->ex_out.dest_reg = -1;
     state->ex_out.result   = 0;
     state->ex_out.valid    = 0;
-    
+
     // "freezing the pipeline" 
     // Undo the PC increment from the last fetch so that IF will
     // re-fetch the same instruction next cycle ()
@@ -99,27 +99,27 @@ void stage_EX(ProcessorState *state){
 
     switch(state->id_ex.opcode){
         case ADD:{         
-            int result = alu_add(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_add(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
             break;
         }
         case SUB: {         
-            int result = alu_sub(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_sub(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
             break;
         }
         case MUL: {         
-            int result = alu_mul(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_mul(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -127,18 +127,18 @@ void stage_EX(ProcessorState *state){
         }
         
         case AND: {         
-            int result = alu_and(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_and(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
             break;
         }
         case OR:  {         
-            int result = alu_or(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_or(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -146,18 +146,18 @@ void stage_EX(ProcessorState *state){
         }
 
         case SAL:  {         
-            int result = alu_sal(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_sal(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
             break;
         }
         case SAR:  {         
-            int result = alu_sar(id_ex.val_r1,state->id_ex.val_r2);
-            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, r1, result);
+            int result = alu_sar(state->id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, state->id_ex.val_r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;

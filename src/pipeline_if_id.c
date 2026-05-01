@@ -3,7 +3,7 @@
 
 void stage_IF(ProcessorState *state) {
     // Look at the processor's current ticket number
-    uint16_t current_pc = state->pc; 
+    short int current_pc = state->pc; 
 
     // Check if we have processed all the instructions M1 loaded
     if (current_pc >= state->instr_count) {
@@ -60,7 +60,7 @@ void stage_ID(ProcessorState *state) {
     // Tell the Execute stage that this is a real instruction ready to be calculated
     state->id_ex.valid = 1; 
 }
-void decode_instruction(uint16_t raw, Opcode *opcode, InstructionFormat *fmt, int *r1, int *r2, int8_t *imm) {
+void decode_instruction(short int raw, Opcode *opcode, InstructionFormat *fmt, int *r1, int *r2, int8_t *imm) {
     
     // Shift right 12 spaces to push the top 4 bits to the bottom.
     // Mask with 0x000F (0000 0000 0000 1111) to isolate just those 4 bits.

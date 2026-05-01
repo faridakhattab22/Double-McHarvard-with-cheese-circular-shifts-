@@ -28,6 +28,7 @@ typedef struct {
 } ID_EX_Reg;
 
 typedef struct {
+    Opcode    opcode; 
     int      dest_reg;      // register to write back (-1 = no writeback) rakamo ya farah focussss
     int8_t   result;        // ALU or memory result
     short int new_pc;        // updated PC if branch/jump taken
