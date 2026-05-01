@@ -9,6 +9,9 @@
 #include "parser.h"
 #include "flush.h"
 #include "alu_hazards.h"
+
+
+
 int main(void) {
     // initialise processor,registers (start as bubbles) including Sreg in initialisation
     // instructions memory +  Data memory
@@ -70,3 +73,63 @@ int main(void) {
 
     return 0;
 }
+
+
+/*
+
+LDI R1, 42
+
+LDI R1, 10
+LDI R2, 20
+ADD R1, R2
+
+LDI R1, 30
+LDI R2, 10
+SUB R1, R2
+
+LDI R1, 5
+LDI R2, 6
+MUL R1, R2
+
+LDI R1, 12
+LDI R2, 10
+AND R1, R2
+
+LDI R1, 12
+LDI R2, 10
+OR R1, R2
+
+LDI R1, 4
+LDI R2, 2
+SAL R1, R2
+
+LDI R1, 16
+LDI R2, 2
+SAR R1, R2
+
+LDI R1, 99
+SB  R1, R2, 0
+
+LDI R1, 5
+SB  R1, R2, 0
+LB  R3, R2, 0
+
+LDI R1, 0
+BEQZ R1, 2
+LDI R2, 99
+LDI R3, 42
+
+LDI R1, 0
+LDI R2, 5
+JR  R1, R2
+LDI R3, 99
+LDI R4, 42
+
+hazards
+
+LDI R2, 0
+LDI R1, 55
+SB  R1, R2, 0
+LB  R3, R2, 0
+ADD R3, R1 
+*/
