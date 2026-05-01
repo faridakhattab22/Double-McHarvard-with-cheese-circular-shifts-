@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "processor.h"
 
+// Farah I used these masks in the output.c dont delete them
 // Bit masks for SREG flags
 #define FLAG_C_MASK 0b00010000  // Bit 4
 #define FLAG_V_MASK 0b00001000  // Bit 3

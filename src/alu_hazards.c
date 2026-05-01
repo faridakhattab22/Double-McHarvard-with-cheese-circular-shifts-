@@ -6,120 +6,54 @@
 #include "sreg.h"
 #include "flush.h"
 #include "pipeline_if_id.h" 
-// ALU operations 
 
-// arithmetic operations
+// ALU operations 
 int8_t alu_add(int8_t a, int8_t b){return (int8_t)(a+b);}
 int8_t alu_sub(int8_t a, int8_t b){return (int8_t)(a-b);}
 int8_t alu_mul(int8_t a, int8_t b){return (int8_t)(a*b);}
-
-// logical operations
 int8_t alu_and(int8_t a, int8_t b){return (int8_t)(a&b);}
-int8_t alu_or (int8_t a, int8_t b){return (int8_t)(a|b);}
-
-// arithmetic shifts 
+int8_t alu_or (int8_t a, int8_t b){return (int8_t)(a|b);} 
 int8_t alu_sal(int8_t a, int8_t imm){return (int8_t)(a<<imm);}  
 int8_t alu_sar(int8_t a, int8_t imm){return (int8_t)(a>>imm);}  
 
-// hazard detection and forwarding should be done in decoding stage,
-// wala detect_hazard at the beginning of EX stage??
-// keda keda before we can execute the ALU op,
+// detect data hazard (RAW) against previous EX result: if dest_reg matches r1 or r2 in ID/EX, and EX result is valid, then we have a hazard.
 
-// DATA HAZARD DETECTION : 
-// If returns HAZARD_FORWARD_EX, then call apply_forwarding to patch the inputs before executing ALU op.
-// If returns HAZARD_STALL, then we will call insert_stall and skip the rest of EX for this cycle (keep EX result as bubble). 
-// If no hazard or forwarding applied, proceed with normal ALU execution and SREG update.
-
-// 1. DETECT DATA HAZARDS FUNCTION
-    // detect data hazard (RAW) against previous EX result: if dest_reg matches r1 or r2 in ID/EX, and EX result is valid, then we have a hazard.
-    // If hazard detected, check if forwarding can resolve it: if EX dest_reg matches ID/
-    // EX r1 or r2, we can forward the EX result to the ALU inputs. If forwarding applied, no stall needed. 
-    // If hazard detected but cannot forward (e.g. load-use), then we must insert a stall
-// 2. apply solution: Forwarding OR stalling (apply_forwarding and insert_stall functions)
-//    - If forwarding: patch val_r1/val_r2 in ID/EX with EX result before ALU executes.
-//    - If stalling: freeze IF/ID (keep same instruction in decode), insert bubble into ID/EX (set valid=0, no writeback, no mem access)
-
-// Hazard detection: inspect ID/EX vs previous EX result.
-// should be in the beginning of ex or end of decoding
 HazardType detect_hazard(ProcessorState *state) {
-    // Need a valid previous EX result AND a valid incoming instruction
     if (!state->ex_out.valid || !state->id_ex.valid)
         return HAZARD_NONE;
 
-    // old value of previoys ex reg 
     int dest = state->ex_out.dest_reg;
 
-    // NONE CASES
-    // dest == -1 means previous instruction had no writeback (SB/BEQZ/JR).
-    // dest == 0 is R0
     if (dest <= 0)
         return HAZARD_NONE;
 
     int r1  = state->id_ex.r1;
     int r2  = state->id_ex.r2;
-    int fmt = state->id_ex.format; // format I or R
+    int fmt = state->id_ex.format;
 
-    // Check if any source register of the current instruction
-    // depends on the destination of the previous instruction. */
-    
     int r1_hazard = (r1 == dest);
     int r2_hazard = (fmt == FORMAT_R) && (r2 == dest);
 
     if (!r1_hazard && !r2_hazard)
         return HAZARD_NONE;
 
-// Decide forward or stall
-// mi4 3arfa ana b3mel eh bs stall for LD
-// If the previous instruction wrote to a register that the current instruction reads, we have a RAW hazard.
-    if(state->id_ex.opcode == LB) {
-        // load-use hazard: if current instruction is a load, we cannot forward from EX because the data won't be ready until the end of EX stage. We must stall.
+    // Only stall for load-use hazard
+    if (state->ex_out.opcode == LB)
         return HAZARD_STALL;
-    }else if (state->ex_out.dest_reg != -1 && // previous wrote a reg
-        state->id_ex.opcode != LB)            // current is not a load itself
-    {
-        return HAZARD_FORWARD_EX;
-    }
 
-    // forward for all other cases
-    return HAZARD_FORWARD_EX;
+    return HAZARD_NONE;
 }
 
-
-// Apply forwarding: patch val_r1/val_r2 in ID/EX before ALU executes.
-void apply_forwarding(ProcessorState *state) {
-    if (!state->ex_out.valid)
-        return;
-
-    // get the previous EX destination and result for forwarding 
-    int    dest = state->ex_out.dest_reg;
-    int8_t val  = state->ex_out.result;
-
-    if (dest <= 0) // r0 is unchangable in pack 4 soo  nothing meaningful to forward
-        return; 
-
-    // does R1 need patching? current value in ID_EX is the same as the destination of the previous EX, 
-    // so we can forward the result to val_r1
-    if (state->id_ex.r1 == dest) {
-        printf("  [HZRD, FWD] EX->EX: R%d=%d forwarded to val_r1\n", dest, (int)val);
-        state->id_ex.val_r1 = val;
-    }
-
-    // does R2 need patching? current value in ID_EX is the same as the destination of the previous EX, 
-    // so we can forward the result to val_r2
-    // only for R-format anyway
-    if (state->id_ex.format == FORMAT_R && state->id_ex.r2 == dest) {
-        printf("  [HZRD, FWD] EX->EX: R%d=%d forwarded to val_r2\n", dest, (int)val);
-        state->id_ex.val_r2 = val;
-    }
-}
-
-// Insert stall cycle: freeze IF/ID, insert bubble into ID/EX.
 void insert_stall(ProcessorState *state) {
     printf("  [HZRD, STALL] bubbling ID_EX, freezing IF/ID\n");
 
     // Insert bubble into ID/EX: marks it invalid so EX does nothing
     insert_bubble_id_ex(state); // 3nd hana fel pipeline_IF_ID
 
+    state->ex_out.dest_reg = -1;
+    state->ex_out.result   = 0;
+    state->ex_out.valid    = 0;
+    
     // "freezing the pipeline" 
     // Undo the PC increment from the last fetch so that IF will
     // re-fetch the same instruction next cycle ()
@@ -127,16 +61,17 @@ void insert_stall(ProcessorState *state) {
         state->pc--;
 }
 
-// STAGE EX ITSELF stage_EX FUNCTION
-// 3. IF CONDITION 
+// 1. DETECT DATA HAZARDS
+//    If HAZARD_STALL,  insert_stall and skip EX
+//  (set valid=0, no writeback, no mem access)
+// 3. SWITCH CASE
 // A. ALU operation [AND , OR , ADD, SUB, MUL, SAL, SAR]
-//   - compute ALU result based on opcode in ID/EX and inputs (after forwarding if applied)
-//   - write back to registers needed, variable regwrite = 1 
+//   - compute ALU result based on opcode in ID/EX and inputs
 //   - SREG update: call updateSREG with appropriate operands and result to set flags for next cycle
-//   - ACTUALLY Writeback to register if needed (regwrite = 1)
+//   - write back to registers needed
 // B. Memory access (LB / SB)
-//   - For LB: compute effective address, read from data memory, write back to register, set regwrite=1, memwrite=0
-//   - For SB: compute effective address, write to data memory, set regwrite=0, memwrite=1
+//   - For LB: compute effective address, read from data memory, write back to register
+//   - For SB: compute effective address, write to data memory
 // C. Branch/jump resolution
 //   - For BEQZ: evaluate branch condition (val_r1 == 0), compute_beqz_target
 //   - For JR: compute_jr_target
@@ -145,6 +80,162 @@ void insert_stall(ProcessorState *state) {
 // 4. Store EX result in pipeline register for forwarding to next cycle (EX_Result struct) - this will be used by the next cycle's hazard detection and forwarding logic. (NEXT CYCLE PREPARATION)
 
 void stage_EX(ProcessorState *state){
+    HazardType hazard = detect_hazard(state);
+    
+    if(hazard == HAZARD_STALL){
+        insert_stall(state);
+        return;
+    }
+    
+    if (!state->id_ex.valid){
+        state->ex_out.valid    = 0;
+        state->ex_out.dest_reg = -1;
+        return;
+    }
+
+    state->id_ex.val_r1 = readReg(state, state->id_ex.r1);
+    state->id_ex.val_r2 = readReg(state, state->id_ex.r2);
+    state->ex_out.opcode = state->id_ex.opcode;
+
+    switch(state->id_ex.opcode){
+        case ADD:{         
+            int result = alu_add(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case SUB: {         
+            int result = alu_sub(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case MUL: {         
+            int result = alu_mul(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        
+        case AND: {         
+            int result = alu_and(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case OR:  {         
+            int result = alu_or(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+
+        case SAL:  {         
+            int result = alu_sal(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case SAR:  {         
+            int result = alu_sar(id_ex.val_r1,state->id_ex.val_r2);
+            updateSREG(state, state->id_ex.opcode, id_ex.val_r1, state->id_ex.val_r2, result);
+            writeReg(state, r1, result);
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = (int8_t)result;
+            state->ex_out.valid    = 1;
+            break;
+        }
+
+        case LDI:{
+            // imm holds the 6-bit sign-extended immediate value from decode
+            // r1 is the destination register
+            writeReg(state, state->id_ex.r1, state->id_ex.imm);
+            
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = state->id_ex.imm;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case LB: {
+            // val_r1 holds the base address register value
+            // imm is the offset
+            short int addr = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
+            int8_t loaded  = (int8_t)read_data_Mem(state, addr);
+
+            writeReg(state, state->id_ex.r1, loaded);
+
+            state->ex_out.dest_reg = state->id_ex.r1;
+            state->ex_out.result   = loaded;
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case SB:{
+            // r1 is base address register, r2 is the source register to store
+            // imm is the offset
+            short int addr  = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
+            uint8_t   value = (uint8_t)state->id_ex.val_r2;
+
+            write_data_Mem(state, addr, value);
+
+            state->ex_out.dest_reg = -1;  // SB writes to memory, not a register
+            state->ex_out.valid    = 1;
+            break;
+        }
+
+        case BEQZ: {
+            // check if r1 == 0, if so branch to pc + 1 + imm
+            short int target = compute_beqz_target(state->id_ex.pc, state->id_ex.imm);
+            
+            if (state->id_ex.val_r1 == 0) {
+                flush_pipeline(state, target);
+                state->ex_out.flush    = FLUSH_TAKEN;
+                state->ex_out.new_pc   = target;
+            } else {
+                state->ex_out.flush  = FLUSH_NONE;
+                state->ex_out.new_pc = 0;
+            }
+
+            state->ex_out.dest_reg = -1; // no register writeback
+            state->ex_out.valid    = 1;
+            break;
+        }
+        case JR: {
+            // target is r1[7:0] || r2[7:0] concatenated into a 16-bit address
+            short int target = compute_jr_target(state->id_ex.val_r1, state->id_ex.val_r2);
+
+            flush_pipeline(state, target);
+
+            state->ex_out.flush    = FLUSH_TAKEN;
+            state->ex_out.new_pc   = target;
+            state->ex_out.dest_reg = -1; // no register writeback
+            state->ex_out.valid    = 1;
+            break;
+        }
+
+        // ASSUMING THAT  flush_pipeline UPDATED THE NEW PC 
+        // state->pc = new_pc;          // next IF fetches from correct address
+        // insert_bubble_if_id(state);  // kill the wrongly fetched instruction
+        // insert_bubble_id_ex(state);  // kill the wrongly decoded instruction
+            
+    }
     
 }
 
@@ -219,4 +310,51 @@ void stage_EX(ProcessorState *state){
 //     }
 
 //     printf("Random tests passed!\n");
+// }
+
+
+
+// OLD DETECT HAZARDS METHOD
+
+// HazardType detect_hazard(ProcessorState *state) {
+//     // Need a valid previous EX result AND a valid incoming instruction
+//     if (!state->ex_out.valid || !state->id_ex.valid)
+//         return HAZARD_NONE;
+
+//     // old value of previoys ex reg 
+//     int dest = state->ex_out.dest_reg;
+
+//     // NONE CASES
+//     // dest == -1 means previous instruction had no writeback (SB/BEQZ/JR).
+//     // dest == 0 is R0
+//     if (dest <= 0)
+//         return HAZARD_NONE;
+
+//     int r1  = state->id_ex.r1;
+//     int r2  = state->id_ex.r2;
+//     int fmt = state->id_ex.format; // format I or R
+
+//     // Check if any source register of the current instruction
+//     // depends on the destination of the previous instruction. */
+    
+//     int r1_hazard = (r1 == dest);
+//     int r2_hazard = (fmt == FORMAT_R) && (r2 == dest);
+
+//     if (!r1_hazard && !r2_hazard)
+//         return HAZARD_NONE;
+
+// // Decide forward or stall
+// // mi4 3arfa ana b3mel eh bs stall for LD
+// // If the previous instruction wrote to a register that the current instruction reads, we have a RAW hazard.
+//     if(state->id_ex.opcode == LB) {
+//         // load-use hazard: if current instruction is a load, we cannot forward from EX because the data won't be ready until the end of EX stage. We must stall.
+//         return HAZARD_STALL;
+//     }else if (state->ex_out.dest_reg != -1 && // previous wrote a reg
+//         state->id_ex.opcode != LB)            // current is not a load itself
+//     {
+//         return HAZARD_FORWARD_EX;
+//     }
+
+//     // forward for all other cases
+//     return HAZARD_FORWARD_EX;
 // }

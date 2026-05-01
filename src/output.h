@@ -9,11 +9,6 @@
 #include "registers.h"
 #include "sreg.h"
 
-
-// Main simulation loop
-int main(int argc, char *argv[]);
-void run_simulation(ProcessorState *state);
-
 // Per-cycle printing
 void print_cycle_header(int cycle);
 void print_stage_IF(ProcessorState *state);

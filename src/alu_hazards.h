@@ -20,9 +20,7 @@ int8_t alu_sar(int8_t a, int8_t imm);   // arithmetic right shift
 // Hazard detection: inspect ID/EX vs previous EX result.
 HazardType detect_hazard(ProcessorState *state);
 
-// Apply forwarding: patch val_r1/val_r2 in ID/EX before ALU executes.
-void apply_forwarding(ProcessorState *state);
-
 // Insert stall cycle: freeze IF/ID, insert bubble into ID/EX.
 void insert_stall(ProcessorState *state);
+
 #endif

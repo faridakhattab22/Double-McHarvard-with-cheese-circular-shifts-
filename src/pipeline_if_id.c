@@ -101,3 +101,22 @@ int8_t sign_extend_6(uint8_t imm6) {
         return (int8_t)imm6;
     }
 }
+
+
+void insert_bubble_if_id(ProcessorState *state) {
+    state->if_id.instruction = 0;
+    state->if_id.pc          = 0;
+    state->if_id.valid       = 0;
+}
+
+void insert_bubble_id_ex(ProcessorState *state) {
+    state->id_ex.opcode  = 0;
+    state->id_ex.format  = 0;
+    state->id_ex.r1      = 0;
+    state->id_ex.r2      = 0;
+    state->id_ex.imm     = 0;
+    state->id_ex.val_r1  = 0;
+    state->id_ex.val_r2  = 0;
+    state->id_ex.pc      = 0;
+    state->id_ex.valid   = 0;  // EX checks this
+}
