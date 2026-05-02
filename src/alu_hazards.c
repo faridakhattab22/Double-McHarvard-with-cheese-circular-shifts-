@@ -79,6 +79,165 @@ void insert_stall(ProcessorState *state) {
 //   - if taken, call flush_pipeline to invalidate IF/ID and ID/EX, set PC to target (NEXT CYCLE PREPARATION)
 // 4. Store EX result in pipeline register for forwarding to next cycle (EX_Result struct) - this will be used by the next cycle's hazard detection and forwarding logic. (NEXT CYCLE PREPARATION)
 
+// void stage_EX(ProcessorState *state){
+//     HazardType hazard = detect_hazard(state);
+    
+//     if(hazard == HAZARD_STALL){
+//         insert_stall(state);
+//         return;
+//     }
+    
+//     if (!state->id_ex.valid){
+//         state->ex_out.valid    = 0;
+//         state->ex_out.dest_reg = -1;
+//         return;
+//     }
+
+//     state->id_ex.val_r1 = readReg(state, state->id_ex.r1);
+//     state->id_ex.val_r2 = readReg(state, state->id_ex.r2);
+//     state->ex_out.opcode = state->id_ex.opcode;
+
+//     switch(state->id_ex.opcode){
+//         case ADD:{         
+//             int result = alu_add(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case SUB: {         
+//             int result = alu_sub(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case MUL: {         
+//             int result = alu_mul(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+        
+//         case AND: {         
+//             int result = alu_and(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case OR:  {         
+//             int result = alu_or(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+
+//         case SAL:  {         
+//             int result = alu_sal(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case SAR:  {         
+//             int result = alu_sar(state->id_ex.val_r1,state->id_ex.val_r2);
+//             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
+//             writeReg(state, state->id_ex.val_r1, result);
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = (int8_t)result;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+
+//         case LDI:{
+//             // imm holds the 6-bit sign-extended immediate value from decode
+//             // r1 is the destination register
+//             writeReg(state, state->id_ex.r1, state->id_ex.imm);
+            
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = state->id_ex.imm;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case LB: {
+//             // val_r1 holds the base address register value
+//             // imm is the offset
+//             short int addr = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
+//             int8_t loaded  = (int8_t)read_data_Mem(state, addr);
+
+//             writeReg(state, state->id_ex.r1, loaded);
+
+//             state->ex_out.dest_reg = state->id_ex.r1;
+//             state->ex_out.result   = loaded;
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case SB:{
+//             // r1 is base address register, r2 is the source register to store
+//             // imm is the offset
+//             short int addr  = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
+//             uint8_t   value = (uint8_t)state->id_ex.val_r2;
+
+//             write_data_Mem(state, addr, value);
+
+//             state->ex_out.dest_reg = -1;  // SB writes to memory, not a register
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+
+//         case BEQZ: {
+//             // check if r1 == 0, if so branch to pc + 1 + imm
+//             short int target = compute_beqz_target(state->id_ex.pc, state->id_ex.imm);
+            
+//             if (state->id_ex.val_r1 == 0) {
+//                 flush_pipeline(state, target);
+//                 state->ex_out.flush    = FLUSH_TAKEN;
+//                 state->ex_out.new_pc   = target;
+//             } else {
+//                 state->ex_out.flush  = FLUSH_NONE;
+//                 state->ex_out.new_pc = 0;
+//             }
+
+//             state->ex_out.dest_reg = -1; // no register writeback
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+//         case JR: {
+//             // target is r1[7:0] || r2[7:0] concatenated into a 16-bit address
+//             short int target = compute_jr_target(state->id_ex.val_r1, state->id_ex.val_r2);
+
+//             flush_pipeline(state, target);
+
+//             state->ex_out.flush    = FLUSH_TAKEN;
+//             state->ex_out.new_pc   = target;
+//             state->ex_out.dest_reg = -1; // no register writeback
+//             state->ex_out.valid    = 1;
+//             break;
+//         }
+
+//         // ASSUMING THAT  flush_pipeline UPDATED THE NEW PC 
+//         // state->pc = new_pc;          // next IF fetches from correct address
+//         // insert_bubble_if_id(state);  // kill the wrongly fetched instruction
+//         // insert_bubble_id_ex(state);  // kill the wrongly decoded instruction
+            
+//     }
+    
+// }
 void stage_EX(ProcessorState *state){
     HazardType hazard = detect_hazard(state);
     
@@ -101,7 +260,7 @@ void stage_EX(ProcessorState *state){
         case ADD:{         
             int result = alu_add(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -110,7 +269,7 @@ void stage_EX(ProcessorState *state){
         case SUB: {         
             int result = alu_sub(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -119,7 +278,7 @@ void stage_EX(ProcessorState *state){
         case MUL: {         
             int result = alu_mul(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -129,7 +288,7 @@ void stage_EX(ProcessorState *state){
         case AND: {         
             int result = alu_and(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -138,7 +297,7 @@ void stage_EX(ProcessorState *state){
         case OR:  {         
             int result = alu_or(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -148,7 +307,7 @@ void stage_EX(ProcessorState *state){
         case SAL:  {         
             int result = alu_sal(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -157,7 +316,7 @@ void stage_EX(ProcessorState *state){
         case SAR:  {         
             int result = alu_sar(state->id_ex.val_r1,state->id_ex.val_r2);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
-            writeReg(state, state->id_ex.val_r1, result);
+            writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
             state->ex_out.result   = (int8_t)result;
             state->ex_out.valid    = 1;
@@ -165,8 +324,6 @@ void stage_EX(ProcessorState *state){
         }
 
         case LDI:{
-            // imm holds the 6-bit sign-extended immediate value from decode
-            // r1 is the destination register
             writeReg(state, state->id_ex.r1, state->id_ex.imm);
             
             state->ex_out.dest_reg = state->id_ex.r1;
@@ -174,9 +331,8 @@ void stage_EX(ProcessorState *state){
             state->ex_out.valid    = 1;
             break;
         }
+
         case LB: {
-            // val_r1 holds the base address register value
-            // imm is the offset
             short int addr = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
             int8_t loaded  = (int8_t)read_data_Mem(state, addr);
 
@@ -187,23 +343,28 @@ void stage_EX(ProcessorState *state){
             state->ex_out.valid    = 1;
             break;
         }
+
         case SB:{
-            // r1 is base address register, r2 is the source register to store
-            // imm is the offset
             short int addr  = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
             uint8_t   value = (uint8_t)state->id_ex.val_r2;
 
             write_data_Mem(state, addr, value);
 
-            state->ex_out.dest_reg = -1;  // SB writes to memory, not a register
+            state->ex_out.dest_reg = -1;
             state->ex_out.valid    = 1;
             break;
         }
 
         case BEQZ: {
-            // check if r1 == 0, if so branch to pc + 1 + imm
             short int target = compute_beqz_target(state->id_ex.pc, state->id_ex.imm);
-            
+
+            // 🔥 DEBUG ADDED
+            printf("DEBUG BRANCH (BEQZ): pc=%d imm=%d target=%d r1_val=%d\n",
+                   state->id_ex.pc,
+                   state->id_ex.imm,
+                   target,
+                   state->id_ex.val_r1);
+
             if (state->id_ex.val_r1 == 0) {
                 flush_pipeline(state, target);
                 state->ex_out.flush    = FLUSH_TAKEN;
@@ -213,30 +374,29 @@ void stage_EX(ProcessorState *state){
                 state->ex_out.new_pc = 0;
             }
 
-            state->ex_out.dest_reg = -1; // no register writeback
+            state->ex_out.dest_reg = -1;
             state->ex_out.valid    = 1;
             break;
         }
+
         case JR: {
-            // target is r1[7:0] || r2[7:0] concatenated into a 16-bit address
             short int target = compute_jr_target(state->id_ex.val_r1, state->id_ex.val_r2);
+
+            // 🔥 DEBUG ADDED
+            printf("DEBUG BRANCH (JR): r1=%d r2=%d target=%d\n",
+                   state->id_ex.val_r1,
+                   state->id_ex.val_r2,
+                   target);
 
             flush_pipeline(state, target);
 
             state->ex_out.flush    = FLUSH_TAKEN;
             state->ex_out.new_pc   = target;
-            state->ex_out.dest_reg = -1; // no register writeback
+            state->ex_out.dest_reg = -1;
             state->ex_out.valid    = 1;
             break;
         }
-
-        // ASSUMING THAT  flush_pipeline UPDATED THE NEW PC 
-        // state->pc = new_pc;          // next IF fetches from correct address
-        // insert_bubble_if_id(state);  // kill the wrongly fetched instruction
-        // insert_bubble_id_ex(state);  // kill the wrongly decoded instruction
-            
     }
-    
 }
 
 

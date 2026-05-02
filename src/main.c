@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
 #include "processor.h"
@@ -10,12 +10,9 @@
 #include "flush.h"
 #include "alu_hazards.h"
 
-
-
 int main(void) {
-    // initialise processor,registers (start as bubbles) including Sreg in initialisation
-    // instructions memory +  Data memory
 
+    // ── Initialization ───────────────────────────────────────────────
     ProcessorState state;
     memset(&state, 0, sizeof(ProcessorState));
 
@@ -29,32 +26,67 @@ int main(void) {
     state.ex_out.dest_reg = -1;
     state.clock_cycle     = 1;
 
-    //  Load program
-    const char *filename = "program_1.asm";
+    // ── Load program ────────────────────────────────────────────────
+    const char *filename = "src/program_1.asm";
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
         fprintf(stderr, "Error: failed to load '%s'\n", filename);
         return 1;
     }
-
+state.instr_count = loaded;
     printf("Loaded %d instructions from %s\n", loaded, filename);
+    // 🔥 ADD THIS LINE HERE
     print_instruction_memory(&state);
 
-    // ── Pipeline loop ─────────────────────────────────────────────────────────
-    while (state.pc <= state.instr_count) {
+    // ── Pipeline Loop ───────────────────────────────────────────────
+    while (state.pc < state.instr_count ||
+           state.if_id.valid ||
+           state.id_ex.valid ||
+           state.ex_out.valid ||
+           state.clock_cycle == 1)   // 🔥 ensures first cycle runs
+    {
         print_cycle_header(state.clock_cycle);
 
-        stage_EX(&state);
-        print_stage_EX(&state);
-
-        stage_ID(&state);
+        // ── EX Stage ────────────────────────────────────────────────
+        // stage_EX(&state);
+        // print_stage_EX(&state);
+         stage_ID(&state);
         print_stage_ID(&state);
 
-        if (state.pc < state.instr_count)
-            stage_IF(&state);
-        print_stage_IF(&state);
+        // ✅ YOUR PART: register change logging
+        if (state.ex_out.valid && state.ex_out.dest_reg != -1) {
+            log_register_change(state.ex_out.dest_reg,
+                                state.ex_out.result,
+                                state.clock_cycle);
+        }
 
+        // ── ID Stage ────────────────────────────────────────────────
+        // stage_ID(&state);
+        // print_stage_ID(&state);
+stage_EX(&state);
+        print_stage_EX(&state);
+        // ── IF Stage ────────────────────────────────────────────────
+        // if (state.pc < state.instr_count)
+        //     stage_IF(&state);
+        // else
+        //     state.if_id.valid = 0;
+
+        // print_stage_IF(&state);
+        // ── IF Stage DEBUG ──────────────────────────────────────────
+printf("DEBUG: before IF → pc=%d\n", state.pc);
+
+if (state.pc < state.instr_count)
+    stage_IF(&state);
+else
+    state.if_id.valid = 0;
+
+printf("DEBUG: after IF → pc=%d, valid=%d\n",
+       state.pc, state.if_id.valid);
+
+print_stage_IF(&state);
+
+        // ── Full State Print ────────────────────────────────────────
         print_all_registers(&state);
         print_sreg(&state);
         print_data_memory(&state);
@@ -62,10 +94,11 @@ int main(void) {
         state.clock_cycle++;
     }
 
-    // ── Final state ───────────────────────────────────────────────────────────
+    // ── Final State ────────────────────────────────────────────────
     printf("\n════════════════════════════════════════\n");
     printf("  Simulation complete — %d cycles\n", state.clock_cycle - 1);
     printf("════════════════════════════════════════\n");
+
     print_all_registers(&state);
     print_sreg(&state);
     print_instruction_memory(&state);
@@ -73,6 +106,84 @@ int main(void) {
 
     return 0;
 }
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include "processor.h"
+// #include "structures.h"
+// #include "registers.h"
+// #include "output.h"
+// #include "pipeline_if_id.h"
+// #include "parser.h"
+// #include "flush.h"
+// #include "alu_hazards.h"
+
+
+
+// int main(void) {
+//     // initialise processor,registers (start as bubbles) including Sreg in initialisation
+//     // instructions memory +  Data memory
+
+//     ProcessorState state;
+//     memset(&state, 0, sizeof(ProcessorState));
+
+//     init_registers(&state);
+//     init_data_memory(&state);
+//     init_inst_memory(&state);
+
+//     state.if_id.valid     = 0;
+//     state.id_ex.valid     = 0;
+//     state.ex_out.valid    = 0;
+//     state.ex_out.dest_reg = -1;
+//     state.clock_cycle     = 1;
+
+//     //  Load program
+//     const char *filename = "program_1.asm";
+
+//     int loaded = parse_file(filename, &state);
+//     if (loaded <= 0) {
+//         fprintf(stderr, "Error: failed to load '%s'\n", filename);
+//         return 1;
+//     }
+
+//     printf("Loaded %d instructions from %s\n", loaded, filename);
+//     print_instruction_memory(&state);
+
+//     // ── Pipeline loop ─────────────────────────────────────────────────────────
+//     while (state.pc <= state.instr_count) {
+//         print_cycle_header(state.clock_cycle);
+
+//         stage_EX(&state);
+//         print_stage_EX(&state);
+
+//         stage_ID(&state);
+//         print_stage_ID(&state);
+
+//         if (state.pc < state.instr_count)
+//             stage_IF(&state);
+//         print_stage_IF(&state);
+
+//         print_all_registers(&state);
+//         print_sreg(&state);
+//         print_data_memory(&state);
+
+//         state.clock_cycle++;
+//     }
+
+//     // ── Final state ───────────────────────────────────────────────────────────
+//     printf("\n════════════════════════════════════════\n");
+//     printf("  Simulation complete — %d cycles\n", state.clock_cycle - 1);
+//     printf("════════════════════════════════════════\n");
+//     print_all_registers(&state);
+//     print_sreg(&state);
+//     print_instruction_memory(&state);
+//     print_data_memory(&state);
+
+//     return 0;
+// }
 
 
 /*
