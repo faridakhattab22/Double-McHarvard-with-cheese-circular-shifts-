@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "processor.h"
-
+#include "structures.h"
 
 // Read assembly file, encode each instruction to 16-bit binary,
 // store into state->instr_mem. Returns number of instructions loaded.
