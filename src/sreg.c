@@ -11,33 +11,33 @@ Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
 
 
 
-void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8_t result){
-    uint8_t new_sreg= state->sreg;
+// void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8_t result){
+//     uint8_t new_sreg= state->sreg;
 
-    // carry -bit4 - gets updated by add
-    // ~ flips all bits of FLAG_C_MASK
-    // & (AND) with sreg forces only bit 4 to become 0, and everything else unchanged
+//     // carry -bit4 - gets updated by add
+//     // ~ flips all bits of FLAG_C_MASK
+//     // & (AND) with sreg forces only bit 4 to become 0, and everything else unchanged
 
-    if (C != -1) {
-        if (C) new_sreg |=  FLAG_C_MASK;   // set bit 4
-        else   new_sreg &= ~FLAG_C_MASK;   // clear bit 4
-        }
-    int V = compute_overflow(val1, val2, result, op);
-    if (V != -1) {
-    if (V) new_sreg |=  FLAG_V_MASK;   // set bit 3
-    else   new_sreg &= ~FLAG_V_MASK;   // clear bit 3
-    //int N = compute_negative(result);
-    //int Z = compute_zero(result);
-    //s sign = N XOR V bit 1 
+//     if (C != -1) {
+//         if (C) new_sreg |=  FLAG_C_MASK;   // set bit 4
+//         else   new_sreg &= ~FLAG_C_MASK;   // clear bit 4
+//         }
+//     int V = compute_overflow(val1, val2, result, op);
+//     if (V != -1) {
+//     if (V) new_sreg |=  FLAG_V_MASK;   // set bit 3
+//     else   new_sreg &= ~FLAG_V_MASK;   // clear bit 3
+//     //int N = compute_negative(result);
+//     //int Z = compute_zero(result);
+//     //s sign = N XOR V bit 1 
     
 
 
 
-     state->sreg = new_sreg & SREG_CLEAR_MASK; //el write back and makes sure bit stay 7:5 zero
-}
+//      state->sreg = new_sreg & SREG_CLEAR_MASK; //el write back and makes sure bit stay 7:5 zero
+// }
 
 
-}
+// }
 
 // Individual flag checks (used internally by updateSREG)
 // carry bit 4 
@@ -126,26 +126,26 @@ int flag_S(uint8_t sreg) {
 int flag_Z(uint8_t sreg) {
     return (sreg >> 0) & 1;  // Bit 0
 }
-// void updateSREG(ProcessorState *state, Opcode op,
-//                 int8_t val1, int8_t val2, int8_t result)
-// {
-//     uint8_t sreg = 0;
+void updateSREG(ProcessorState *state, Opcode op,
+                int8_t val1, int8_t val2, int8_t result)
+{
+    uint8_t sreg = 0;
 
-//     // Compute flags using existing helper functions
-//     int C = compute_carry(val1, val2, op);
-//     int V = compute_overflow(val1, val2, result, op);
-//     int N = compute_negative(result);
-//     int Z = compute_zero(result);
+    // Compute flags using existing helper functions
+    int C = compute_carry(val1, val2, op);
+    int V = compute_overflow(val1, val2, result, op);
+    int N = compute_negative(result);
+    int Z = compute_zero(result);
 
-//     // Sign flag = N XOR V
-//     int S = (N ^ V);
+    // Sign flag = N XOR V
+    int S = (N ^ V);
 
-//     // Only set flags that are valid (-1 means ignore)
-//     if (Z == 1) sreg |= (1 << 0);
-//     if (S == 1) sreg |= (1 << 1);
-//     if (N == 1) sreg |= (1 << 2);
-//     if (V == 1) sreg |= (1 << 3);
-//     if (C == 1) sreg |= (1 << 4);
+    // Only set flags that are valid (-1 means ignore)
+    if (Z == 1) sreg |= (1 << 0);
+    if (S == 1) sreg |= (1 << 1);
+    if (N == 1) sreg |= (1 << 2);
+    if (V == 1) sreg |= (1 << 3);
+    if (C == 1) sreg |= (1 << 4);
 
-//     state->sreg = sreg;
-// }
+    state->sreg = sreg;
+}

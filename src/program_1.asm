@@ -4,7 +4,6 @@ ADD R1, R2
 
 LDI R3, 5
 SUB R1, R3
-
 LDI R4, 2
 MUL R1, R4
 

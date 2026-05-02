@@ -28,8 +28,8 @@ int main(void) {
 
     // ── Load program ────────────────────────────────────────────────
     //const char *filename = "src/program_1.asm";
-        const char *filename = "src/program_2.asm";
-
+       // const char *filename = "program_1.asm";
+        const char *filename = "program_3.asm";
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
@@ -51,10 +51,10 @@ state.instr_count = loaded;
         print_cycle_header(state.clock_cycle);
 
         // ── EX Stage ────────────────────────────────────────────────
-        // stage_EX(&state);
-        // print_stage_EX(&state);
-         stage_ID(&state);
-        print_stage_ID(&state);
+        stage_EX(&state);
+        print_stage_EX(&state);
+        //  stage_ID(&state);
+        // print_stage_ID(&state);
 
         // ✅ YOUR PART: register change logging
         if (state.ex_out.valid && state.ex_out.dest_reg != -1) {
@@ -64,10 +64,10 @@ state.instr_count = loaded;
         }
 
         // ── ID Stage ────────────────────────────────────────────────
-        // stage_ID(&state);
-        // print_stage_ID(&state);
-        stage_EX(&state);
-        print_stage_EX(&state);
+        stage_ID(&state);
+        print_stage_ID(&state);
+        // stage_EX(&state);
+        // print_stage_EX(&state);
         // ── IF Stage ────────────────────────────────────────────────
         // if (state.pc < state.instr_count)
         //     stage_IF(&state);

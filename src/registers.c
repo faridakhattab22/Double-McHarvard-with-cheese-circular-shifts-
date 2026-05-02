@@ -80,6 +80,7 @@ void write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
         fprintf(stderr, "[WARN] Data memory write out of range: %u\n", addr);
         return;
     }
+    state->data_mem[addr] = value;
 
     // ✅ YOUR ADDITION: log BEFORE writing
     if (state->data_mem[addr] != value) {
@@ -87,7 +88,6 @@ void write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
     }
 
     // original logic (DO NOT CHANGE)
-    state->data_mem[addr] = value;
 }
 /* --- Instruction memory (byte-addressable, 1024 × 16-bit) --- */
 void    write_inst_Mem(ProcessorState *state, short int addr, short int value){ // mmkn t7tagoha f el parsing f elawel
