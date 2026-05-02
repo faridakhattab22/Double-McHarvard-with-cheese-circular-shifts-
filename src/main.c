@@ -27,7 +27,9 @@ int main(void) {
     state.clock_cycle     = 1;
 
     // ── Load program ────────────────────────────────────────────────
-    const char *filename = "src/program_1.asm";
+    //const char *filename = "src/program_1.asm";
+        const char *filename = "src/program_2.asm";
+
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
@@ -64,7 +66,7 @@ state.instr_count = loaded;
         // ── ID Stage ────────────────────────────────────────────────
         // stage_ID(&state);
         // print_stage_ID(&state);
-stage_EX(&state);
+        stage_EX(&state);
         print_stage_EX(&state);
         // ── IF Stage ────────────────────────────────────────────────
         // if (state.pc < state.instr_count)
