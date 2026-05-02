@@ -26,18 +26,17 @@ int parse_file(const char *filename, ProcessorState *state) {
     int count = 0;
 
     while (fgets(line, sizeof(line), file)) {
-    //check memory limit ---- CHECK QUESTION
-    //if (count >= (sizeof(state->instr_mem) / sizeof(state->instr_mem[0]))) {
-    //printf("Error: Instruction memory overflow\n");
-    //exit(1);
-        // }
+
         short int instr = encode_instruction(line);
+
         //binary rep
         printf("Encoded value: ");
         print_binary(instr);
-        //hexadecimal printf("Encoded value: %04X\n", instr);
-        state->instr_mem[count++] = instr;
 
+        // 🔥 DEBUG: show raw stored instruction
+        printf("PARSER DEBUG: stored instr[%d] = %d\n", count, instr);
+
+        state->instr_mem[count++] = instr;
     }
 
     fclose(file);
@@ -58,7 +57,7 @@ Opcode mnemonic_to_opcode(const char *m) {
     if (strcmp(m, "SAR") == 0) return SAR;
     if (strcmp(m, "LB") == 0) return LB;
     if (strcmp(m, "SB") == 0) return SB;
-    //error
+
     printf("Error: Invalid instruction '%s'\n", m);
     exit(1);
 }
@@ -82,12 +81,13 @@ short int encode_instruction(const char *line) {
     char *mnemonic = strtok(temp, " \n");
     char *op1 = strtok(NULL, " \n");
     char *op2 = strtok(NULL, " \n");
+
     //check if more operands were used
     char *extra = strtok(NULL, " \n");
     if (extra != NULL) {
-    printf("Error: Too many operands in line: %s\n", line);
-    exit(1);
-}
+        printf("Error: Too many operands in line: %s\n", line);
+        exit(1);
+    }
 
     if (!mnemonic) return 0;
     if (!op1 || !op2) {
@@ -105,10 +105,15 @@ short int encode_instruction(const char *line) {
 
         int r1 = atoi(op1 + 1);
         int r2 = atoi(op2 + 1);
-if (r1 < 0 || r1 > 63 || r2 < 0 || r2 > 63) {
-    printf("Error: Invalid register in line: %s\n", line);
-    exit(1);
-}
+
+        // 🔥 DEBUG
+        printf("PARSER DEBUG (R): opcode=%d r1=%d r2=%d\n", op, r1, r2);
+
+        if (r1 < 0 || r1 > 63 || r2 < 0 || r2 > 63) {
+            printf("Error: Invalid register in line: %s\n", line);
+            exit(1);
+        }
+
         instruction |= (r1 << 6);
         instruction |= r2;
 
@@ -116,6 +121,9 @@ if (r1 < 0 || r1 > 63 || r2 < 0 || r2 > 63) {
 
         int r1 = atoi(op1 + 1);
         int imm = atoi(op2);
+
+        // 🔥 DEBUG
+        printf("PARSER DEBUG (I): opcode=%d r1=%d imm=%d\n", op, r1, imm);
 
         if ((op == SAL || op == SAR) && imm < 0) {
             printf("Error: Shift immediate must be positive\n");

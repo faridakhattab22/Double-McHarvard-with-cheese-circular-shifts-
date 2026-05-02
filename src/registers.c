@@ -1,5 +1,6 @@
 #include "structures.h"
 #include "registers.h"
+#include "output.h"
 
 
 
@@ -55,19 +56,38 @@ short int  read_inst_Mem (ProcessorState *state, short int addr){ // mmkn t7tago
 
 }
 /* --- Data memory (byte-addressable, 2048 × 8-bit) --- */
-void    write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
+// void    write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
+//     if (addr < 0 ){
+//      return ; // invalid address checking 
+//     }
+//     if (addr > 2047) {
+//         fprintf(stderr, "[WARN] Data memory write out of range: %u\n", addr);
+//         return;
+//     }
+//     else{
+//     state->data_mem[addr] = value;
+
+//     }
+
+// }
+void write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
+
     if (addr < 0 ){
-     return ; // invalid address checking 
+        return;
     }
+
     if (addr > 2047) {
         fprintf(stderr, "[WARN] Data memory write out of range: %u\n", addr);
         return;
     }
-    else{
-    state->data_mem[addr] = value;
 
+    // ✅ YOUR ADDITION: log BEFORE writing
+    if (state->data_mem[addr] != value) {
+        log_memory_change(addr, value, state->clock_cycle);
     }
 
+    // original logic (DO NOT CHANGE)
+    state->data_mem[addr] = value;
 }
 /* --- Instruction memory (byte-addressable, 1024 × 16-bit) --- */
 void    write_inst_Mem(ProcessorState *state, short int addr, short int value){ // mmkn t7tagoha f el parsing f elawel

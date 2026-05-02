@@ -126,3 +126,26 @@ int flag_S(uint8_t sreg) {
 int flag_Z(uint8_t sreg) {
     return (sreg >> 0) & 1;  // Bit 0
 }
+void updateSREG(ProcessorState *state, Opcode op,
+                int8_t val1, int8_t val2, int8_t result)
+{
+    uint8_t sreg = 0;
+
+    // Compute flags using existing helper functions
+    int C = compute_carry(val1, val2, op);
+    int V = compute_overflow(val1, val2, result, op);
+    int N = compute_negative(result);
+    int Z = compute_zero(result);
+
+    // Sign flag = N XOR V
+    int S = (N ^ V);
+
+    // Only set flags that are valid (-1 means ignore)
+    if (Z == 1) sreg |= (1 << 0);
+    if (S == 1) sreg |= (1 << 1);
+    if (N == 1) sreg |= (1 << 2);
+    if (V == 1) sreg |= (1 << 3);
+    if (C == 1) sreg |= (1 << 4);
+
+    state->sreg = sreg;
+}

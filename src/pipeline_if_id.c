@@ -1,34 +1,55 @@
 #include "pipeline_if_id.h"
 #include "registers.h" 
 
-void stage_IF(ProcessorState *state) {
-    // Look at the processor's current ticket number
-    short int current_pc = state->pc; 
+// void stage_IF(ProcessorState *state) {
+//     // Look at the processor's current ticket number
+//     short int current_pc = state->pc; 
+//         printf("DEBUG IF: pc=%d instr_count=%d\n", current_pc, state->instr_count);
 
-    // Check if we have processed all the instructions M1 loaded
+
+//     // Check if we have processed all the instructions M1 loaded
+//     if (current_pc >= state->instr_count) {
+//         // If we are out of instructions, we insert a "bubble" (a fake, empty instruction)
+//         state->if_id.valid = 0; 
+//         return; // Stop executing this function
+//     }
+
+//     // Our instruction is 16 bits, but M7 made the memory array 8 bits per slot.
+//     // We multiply PC by 2 to find our starting slot, then grab two slots.
+//     uint8_t byte1 = state->instr_mem[current_pc * 2];       // Top 8 bits
+//     uint8_t byte2 = state->instr_mem[(current_pc * 2) + 1]; // Bottom 8 bits
+
+//     // We shift the top 8 bits to the left by 8 spaces, and OR (|) them with the bottom 8 bits.
+//     // This glues them together into a single 16-bit number.
+//     state->if_id.instruction = (byte1 << 8) | byte2; 
+
+//     // Save the PC so the Execute stage knows where it is if it needs to branch
+//     state->if_id.pc = current_pc; 
+    
+//     // Tell the Decode stage that this is a real instruction, not a bubble
+//     state->if_id.valid = 1; 
+
+//     // Increment the PC so the next clock cycle grabs the next instruction
+//     state->pc = current_pc + 1; 
+// }
+
+void stage_IF(ProcessorState *state) {
+    short int current_pc = state->pc;
+
+    printf("DEBUG IF: pc=%d instr_count=%d\n", current_pc, state->instr_count);
+
     if (current_pc >= state->instr_count) {
-        // If we are out of instructions, we insert a "bubble" (a fake, empty instruction)
-        state->if_id.valid = 0; 
-        return; // Stop executing this function
+        state->if_id.valid = 0;
+        return;
     }
 
-    // Our instruction is 16 bits, but M7 made the memory array 8 bits per slot.
-    // We multiply PC by 2 to find our starting slot, then grab two slots.
-    uint8_t byte1 = state->instr_mem[current_pc * 2];       // Top 8 bits
-    uint8_t byte2 = state->instr_mem[(current_pc * 2) + 1]; // Bottom 8 bits
+    // ✅ FIX: directly read full 16-bit instruction
+    state->if_id.instruction = state->instr_mem[current_pc];
 
-    // We shift the top 8 bits to the left by 8 spaces, and OR (|) them with the bottom 8 bits.
-    // This glues them together into a single 16-bit number.
-    state->if_id.instruction = (byte1 << 8) | byte2; 
+    state->if_id.pc = current_pc;
+    state->if_id.valid = 1;
 
-    // Save the PC so the Execute stage knows where it is if it needs to branch
-    state->if_id.pc = current_pc; 
-    
-    // Tell the Decode stage that this is a real instruction, not a bubble
-    state->if_id.valid = 1; 
-
-    // Increment the PC so the next clock cycle grabs the next instruction
-    state->pc = current_pc + 1; 
+    state->pc = current_pc + 1;
 }
 void stage_ID(ProcessorState *state) {
     // Check if the Fetch stage gave us a bubble (empty instruction)
