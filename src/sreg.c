@@ -17,7 +17,8 @@ void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8
     // carry -bit4 - gets updated by add
     // ~ flips all bits of FLAG_C_MASK
     // & (AND) with sreg forces only bit 4 to become 0, and everything else unchanged
-
+    //return 1 law carry happened so turn bit 4 ON 
+    int C = compute_overflow(val1, val2, result, op);
     if (C != -1) {
         if (C) new_sreg |=  FLAG_C_MASK;   // set bit 4
         else   new_sreg &= ~FLAG_C_MASK;   // clear bit 4
