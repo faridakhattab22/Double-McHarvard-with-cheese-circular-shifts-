@@ -305,7 +305,7 @@ void stage_EX(ProcessorState *state){
         }
 
         case SAL:  {         
-            int result = alu_sal(state->id_ex.val_r1,state->id_ex.val_r2);
+            int result = alu_sal(state->id_ex.val_r1,state->id_ex.imm);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
             writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
@@ -314,7 +314,7 @@ void stage_EX(ProcessorState *state){
             break;
         }
         case SAR:  {         
-            int result = alu_sar(state->id_ex.val_r1,state->id_ex.val_r2);
+            int result = alu_sar(state->id_ex.val_r1,state->id_ex.imm);
             updateSREG(state, state->id_ex.opcode, state->id_ex.val_r1, state->id_ex.val_r2, result);
             writeReg(state, state->id_ex.r1, result);
             state->ex_out.dest_reg = state->id_ex.r1;
@@ -333,7 +333,7 @@ void stage_EX(ProcessorState *state){
         }
 
         case LB: {
-            short int addr = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
+            short int addr = (short int) (state->id_ex.imm);
             int8_t loaded  = (int8_t)read_data_Mem(state, addr);
 
             writeReg(state, state->id_ex.r1, loaded);
@@ -345,8 +345,8 @@ void stage_EX(ProcessorState *state){
         }
 
         case SB:{
-            short int addr  = (short int)(state->id_ex.val_r1 + state->id_ex.imm);
-            uint8_t   value = (uint8_t)state->id_ex.val_r2;
+            short int addr  = (short int)(state->id_ex.imm);
+            uint8_t   value = (uint8_t)state->id_ex.val_r1;
 
             write_data_Mem(state, addr, value);
 

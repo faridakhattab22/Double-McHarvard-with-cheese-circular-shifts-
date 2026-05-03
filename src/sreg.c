@@ -11,9 +11,10 @@ Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
 
 
 
-void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8_t result){
-    uint8_t new_sreg= state->sreg;
+// void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8_t result){
+//     uint8_t new_sreg= state->sreg;
 
+<<<<<<< HEAD
     // carry -bit4 - gets updated by add
     // ~ flips all bits of FLAG_C_MASK
     // & (AND) with sreg forces only bit 4 to become 0, and everything else unchanged
@@ -30,15 +31,32 @@ void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8
     //int N = compute_negative(result);
     //int Z = compute_zero(result);
     //s sign = N XOR V bit 1 
+=======
+//     // carry -bit4 - gets updated by add
+//     // ~ flips all bits of FLAG_C_MASK
+//     // & (AND) with sreg forces only bit 4 to become 0, and everything else unchanged
+
+//     if (C != -1) {
+//         if (C) new_sreg |=  FLAG_C_MASK;   // set bit 4
+//         else   new_sreg &= ~FLAG_C_MASK;   // clear bit 4
+//         }
+//     int V = compute_overflow(val1, val2, result, op);
+//     if (V != -1) {
+//     if (V) new_sreg |=  FLAG_V_MASK;   // set bit 3
+//     else   new_sreg &= ~FLAG_V_MASK;   // clear bit 3
+//     //int N = compute_negative(result);
+//     //int Z = compute_zero(result);
+//     //s sign = N XOR V bit 1 
+>>>>>>> 4db50ba977e3ba0ab0fd9a5075ad4e3591e48bcb
     
 
 
 
-     state->sreg = new_sreg & SREG_CLEAR_MASK; //el write back and makes sure bit stay 7:5 zero
-}
+//      state->sreg = new_sreg & SREG_CLEAR_MASK; //el write back and makes sure bit stay 7:5 zero
+// }
 
 
-}
+// }
 
 // Individual flag checks (used internally by updateSREG)
 // carry bit 4 

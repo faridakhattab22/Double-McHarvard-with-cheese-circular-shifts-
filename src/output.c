@@ -102,10 +102,10 @@ void print_all_registers(ProcessorState *state) {
     printf(  "├──────┼──────────┼───────────────────┤\n");
     for (int i = 0; i < 64; i++) {
         int8_t v = state->regs[i];
-        if (v != 0 || i == 0) { // always print R0, skip zero regs
+        // if (v != 0 || i == 0) { // always print R0, skip zero regs
             printf("│  R%-2d │  %-7d │  0x%02X             │\n",
-                   i, (int)v, (uint8_t)v);
-        }
+                  i, (int)v, (uint8_t)v);
+        // }
     }
     printf("└──────┴──────────┴───────────────────┘\n");
 }
