@@ -12,24 +12,6 @@
 
 
 
-// LDI R9, -3
-// LDI R10, 4
-// MUL R9, R10
-
-// LDI R11, 64
-// LDI R12, 1
-// SAL R11, R12
-
-// LDI R11, 1
-// LDI R12, 4
-// SAR R11, R12
-
-// LDI R13, -16
-// LDI R14, 15
-// AND R13, R14
-
-
-
 int main(void) {
 
     // ── Initialization ───────────────────────────────────────────────

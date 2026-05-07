@@ -20,12 +20,12 @@ int  compute_carry(int8_t val1, int8_t val2, Opcode op){
          return -1; // carry gets updated only by add 
      }
      // for negative numbers el mafrod en C maslan law -5 it stores it in 32 bits ya3ni beykamel el ba2i b ones fa 3shan keda lazem nestakhdem uint8_t
-    int temp1 = (int8_t)val1;
-    int temp2 = (int8_t)val2;
-    int result = temp1 + temp2;
+    int8_t temp1 = (int8_t)val1;
+    int8_t temp2 = (int8_t)val2;
+    int8_t result = temp1 + temp2;
 
     // el 8 bits le7ad 255 in decimal so  
-    if (result > 255) { //check el condition beta3et el hexa number tani keda
+    if (result > 127) { //check el condition beta3et el hexa number tani keda
     return 1;    
 }
 return 0;
