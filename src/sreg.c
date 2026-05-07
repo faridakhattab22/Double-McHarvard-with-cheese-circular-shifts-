@@ -43,21 +43,18 @@ int  compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op){
         return 1 ;
     }
      if (val1 < 0 && val2 < 0 && result > 0) {
-            return 1;
-        }
-        return 0;
-
-        /* Overflow for subtraction (val1 - val2) is a bit different. The spec says: overflow occurs when the signs of the two operands are different AND the result has the same sign as val2 (the subtrahend — the one being subtracted).
-        Case 1: val1 is positive, val2 is negative, result is negative. Subtracting a negative is like adding a positive — so a positive minus a negative should give something even more positive. If instead we got a negative, the result wrapped around — overflow.
-        Case 2: val1 is negative, val2 is positive, result is positive. A negative minus a positive should give something even more negative. If instead we got a positive, it wrapped around — overflow.
-        If the signs of val1 and val2 are the same, subtraction can never overflow, so we return*/
-
-        if (val1 > 0 && val2 < 0 && result < 0) {
+        return 1;
+    }
+    if (val1 > 0 && val2 < 0 && result < 0) {
         return 1;
     }
     if (val1 < 0 && val2 > 0 && result > 0) {
         return 1;
     }
+        /* Overflow for subtraction (val1 - val2) is a bit different. The spec says: overflow occurs when the signs of the two operands are different AND the result has the same sign as val2 (the subtrahend — the one being subtracted).
+        Case 1: val1 is positive, val2 is negative, result is negative. Subtracting a negative is like adding a positive — so a positive minus a negative should give something even more positive. If instead we got a negative, the result wrapped around — overflow.
+        Case 2: val1 is negative, val2 is positive, result is positive. A negative minus a positive should give something even more negative. If instead we got a positive, it wrapped around — overflow.
+        If the signs of val1 and val2 are the same, subtraction can never overflow, so we return*/
     return 0;
 
 
