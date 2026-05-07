@@ -239,6 +239,7 @@ void insert_stall(ProcessorState *state) {
     
 // }
 void stage_EX(ProcessorState *state){
+    state->ex_out.flush = FLUSH_NONE; 
     HazardType hazard = detect_hazard(state);
     
     if(hazard == HAZARD_STALL){

@@ -40,7 +40,7 @@ void stage_IF(ProcessorState *state) {
 
     printf("DEBUG IF: pc=%d instr_count=%d\n", current_pc, state->instr_count);
 
-    if (current_pc >= state->instr_count|| ((state->ex_out.flush==FLUSH_TAKEN)& (current_pc+1==state->ex_out.new_pc))) {
+    if (current_pc >= state->instr_count|| state->ex_out.flush==FLUSH_TAKEN) {
         state->if_id.valid = 0 ; 
         return;
     }
