@@ -8,6 +8,8 @@ N(negative) by kolo  add,sub,mul,and,or,sal,sar
 S(sign) add w sub 
 Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
 */
+//chcp 65001 | Out-Null ; .\e.exe
+
 
 
 
@@ -153,5 +155,5 @@ void updateSREG(ProcessorState *state, Opcode op, int8_t val1, int8_t val2, int8
         }
     }
 
-    state->sreg = new_sreg & SREG_CLEAR_MASK; // write back — bits 7:5 always zero
+    state->sreg = new_sreg & SREG_CLEAR_MASK; // write back fel proccesor — bits 7:5 always zero
 }
