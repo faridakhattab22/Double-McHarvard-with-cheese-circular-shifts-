@@ -1,1 +1,5 @@
+use powershell guys!!
+
 gcc parser.c flush.c  alu_hazards.c main.c output.c pipeline_if_id.c registers.c sreg.c -o e.exe
+
+chcp 65001 | Out-Null ; .\e.exe
