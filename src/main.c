@@ -10,6 +10,26 @@
 #include "flush.h"
 #include "alu_hazards.h"
 
+
+
+// LDI R9, -3
+// LDI R10, 4
+// MUL R9, R10
+
+// LDI R11, 64
+// LDI R12, 1
+// SAL R11, R12
+
+// LDI R11, 1
+// LDI R12, 4
+// SAR R11, R12
+
+// LDI R13, -16
+// LDI R14, 15
+// AND R13, R14
+
+
+
 int main(void) {
 
     // ── Initialization ───────────────────────────────────────────────
@@ -28,12 +48,13 @@ int main(void) {
 
     // ── Load program ────────────────────────────────────────────────
     //const char *filename = "src/program_1.asm";
-      // const char *filename = "program_sreg_test.asm";
-       // const char *filename = "program_1.asm";
-       // const char *filename = "program_3.asm";
-      const char *filename = "program_beqz_taken.asm"; 
-      // const char *filename = "program_jr_basic.asm"; 
-       // const char *filename = "program_beqz_not_taken.asm"; 
+    const char *filename = "program_sreg_test.asm";
+    // const char *filename = "program_1.asm";
+    // const char *filename = "program_3.asm";
+    // const char *filename = "program_beqz_taken.asm"; 
+    // const char *filename = "program_jr_basic.asm"; 
+    // const char *filename = "program_beqz_not_taken.asm"; 
+    // const char *filename = "program_hazard.asm"; 
 
 
     int loaded = parse_file(filename, &state);
@@ -81,15 +102,15 @@ state.instr_count = loaded;
 
         // print_stage_IF(&state);
         // ── IF Stage DEBUG ──────────────────────────────────────────
-printf("DEBUG: before IF → pc=%d\n", state.pc);
+// printf("DEBUG: before IF → pc=%d\n", state.pc);
 
 if (state.pc < state.instr_count)
     stage_IF(&state);
 else
     state.if_id.valid = 0;
 
-printf("DEBUG: after IF → pc=%d, valid=%d\n",
-       state.pc, state.if_id.valid);
+// printf("DEBUG: after IF → pc=%d, valid=%d\n",
+    //    state.pc, state.if_id.valid);
 
 print_stage_IF(&state);
 

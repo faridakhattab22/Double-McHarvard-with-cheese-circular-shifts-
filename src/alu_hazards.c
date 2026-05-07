@@ -360,11 +360,11 @@ void stage_EX(ProcessorState *state){
             short int target = compute_beqz_target(state->id_ex.pc, state->id_ex.imm);
 
             // 🔥 DEBUG ADDED
-            printf("DEBUG BRANCH (BEQZ): pc=%d imm=%d target=%d r1_val=%d\n",
-                   state->id_ex.pc,
-                   state->id_ex.imm,
-                   target,
-                   state->id_ex.val_r1);
+            // printf("DEBUG BRANCH (BEQZ): pc=%d imm=%d target=%d r1_val=%d\n",
+            //        state->id_ex.pc,
+            //        state->id_ex.imm,
+            //        target,
+            //        state->id_ex.val_r1);
 
             if (state->id_ex.val_r1 == 0) {
                 flush_pipeline(state, target);
