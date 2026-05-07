@@ -83,8 +83,8 @@ void print_stage_EX(ProcessorState *state) {
 // ─── Change Logging ──────────────────────────────────────────────────────────
 
 void log_register_change(int reg_index, int8_t new_value, int cycle) {
-    printf("  [WB,  cycle %d] R%d ← %d (0x%02X)\n",
-           cycle, reg_index, (int)new_value, (uint8_t)new_value);
+    // printf("  [WB,  cycle %d] R%d ← %d (0x%02X)\n",
+    //        cycle, reg_index, (int)new_value, (uint8_t)new_value);
 }
 
 void log_memory_change(short int address, uint8_t new_value, int cycle) {
