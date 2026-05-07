@@ -1,6 +1,6 @@
 #include "pipeline_if_id.h"
 #include "registers.h" 
-#include "proccesor.h"
+#include "processor.h"
 
 
 // void stage_IF(ProcessorState *state) {
