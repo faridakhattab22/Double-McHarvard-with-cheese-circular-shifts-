@@ -1,5 +1,7 @@
 #include "pipeline_if_id.h"
 #include "registers.h" 
+#include "proccesor.h"
+
 
 // void stage_IF(ProcessorState *state) {
 //     // Look at the processor's current ticket number
@@ -38,8 +40,8 @@ void stage_IF(ProcessorState *state) {
 
     printf("DEBUG IF: pc=%d instr_count=%d\n", current_pc, state->instr_count);
 
-    if (current_pc >= state->instr_count) {
-        state->if_id.valid = 0;
+    if (current_pc >= state->instr_count|| ((state->ex_out.flush==FLUSH_TAKEN)& (current_pc+1==state->ex_out.new_pc))) {
+        state->if_id.valid = 0 ; 
         return;
     }
 

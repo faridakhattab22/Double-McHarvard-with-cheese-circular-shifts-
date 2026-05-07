@@ -28,8 +28,13 @@ int main(void) {
 
     // ── Load program ────────────────────────────────────────────────
     //const char *filename = "src/program_1.asm";
+      // const char *filename = "program_sreg_test.asm";
        // const char *filename = "program_1.asm";
-        const char *filename = "program_3.asm";
+       // const char *filename = "program_3.asm";
+      const char *filename = "program_beqz_taken.asm"; 
+      // const char *filename = "program_jr_basic.asm"; 
+       // const char *filename = "program_beqz_not_taken.asm"; 
+
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
@@ -42,11 +47,11 @@ state.instr_count = loaded;
     print_instruction_memory(&state);
 
     // ── Pipeline Loop ───────────────────────────────────────────────
-    while (state.pc < state.instr_count ||
-           state.if_id.valid ||
-           state.id_ex.valid ||
-           state.ex_out.valid ||
-           state.clock_cycle == 1)   // 🔥 ensures first cycle runs
+    while (state.pc < state.instr_count || state.if_id.valid ||state.id_ex.valid 
+        //||
+           //state.ex_out.valid ||
+           //state.clock_cycle == 1
+           )   // 🔥 ensures first cycle runs
     {
         print_cycle_header(state.clock_cycle);
 

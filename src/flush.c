@@ -4,7 +4,7 @@
 
 // Compute BEQZ target: PC + 1 + immediate
 short int compute_beqz_target(short int stored_pc, int8_t imm) {
-    return stored_pc + 1 + imm;
+    return stored_pc  + imm;
 }
 
 // Compute JR target: concatenate r1 and r2
