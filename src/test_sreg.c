@@ -102,26 +102,33 @@ static void test_compute_overflow(void)
     assert(compute_overflow(50,50,100,SAL)==-1);
     assert(compute_overflow(50,50,100,LDI)==-1);
 
-    /* ADD: no overflow */
+    /* ADD: no overflow — different signs can never overflow */
     assert(compute_overflow(10,  20,  30,  ADD)==0);
+    assert(compute_overflow(10, -20, -10,  ADD)==0);  // different signs → always 0
+    assert(compute_overflow(-10, 20,  10,  ADD)==0);  // different signs → always 0
+
+    /* ADD: no overflow — same signs, result fits */
     assert(compute_overflow(-10,-20, -30,  ADD)==0);
-    assert(compute_overflow(10, -20, -10,  ADD)==0);
 
     /* ADD: overflow — pos+pos→neg */
-    assert(compute_overflow(100,100,(int8_t)(100+100),ADD)==1);
+    assert(compute_overflow(100, 100, (int8_t)(200), ADD)==1);
     /* ADD: overflow — neg+neg→pos */
     assert(compute_overflow(-100,-100,(int8_t)(-200),ADD)==1);
 
-    /* SUB: no overflow (same-sign operands, early return 0) */
-    assert(compute_overflow(30, 20,  10, SUB)==0);
-    assert(compute_overflow(-30,-20,-10, SUB)==0);
-    assert(compute_overflow(10, 10,   0, SUB)==0);
+    /* SUB: no overflow — same sign operands, spec says can never overflow */
+    assert(compute_overflow(30,  20,  10,  SUB)==0);
+    assert(compute_overflow(-30,-20, -10,  SUB)==0);
+    assert(compute_overflow(10,  10,   0,  SUB)==0);
+    assert(compute_overflow(5,   15, -10,  SUB)==0);  // fixed: same sign → 0 per spec
 
-    /* SUB: pos-pos→neg fires the shared pos+pos→neg check → returns 1 */
-    assert(compute_overflow(5, 15, -10, SUB)==1);
+    /* SUB: overflow — different signs per spec */
+    // pos - neg → result should be positive, if negative then overflow
+    assert(compute_overflow(100, -100, (int8_t)(200), SUB)==1);
+    // neg - pos → result should be negative, if positive then overflow
+    assert(compute_overflow(-100, 100, (int8_t)(-200), SUB)==1);
 
-    /* SUB: mixed-sign operands → 0 (early return) */
-    assert(compute_overflow(20, -5, 25, SUB)==0);
+    /* SUB: no overflow — different signs but result is correct sign */
+    assert(compute_overflow(20, -5, 25, SUB)==0);  // pos - neg → positive, correct
 
     puts("    PASSED");
 }
