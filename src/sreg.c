@@ -20,16 +20,15 @@ int  compute_carry(int8_t val1, int8_t val2, Opcode op){
          return -1; // carry gets updated only by add 
      }
      // for negative numbers el mafrod en C maslan law -5 it stores it in 32 bits ya3ni beykamel el ba2i b ones fa 3shan keda lazem nestakhdem uint8_t
-    int8_t temp1 = (int8_t)val1;
-    int8_t temp2 = (int8_t)val2;
-    int8_t result = temp1 + temp2;
+    int temp1 = (int8_t)val1;
+    int temp2 = (int8_t)val2;
+    int result = temp1 + temp2;
 
-    // el 8 bits le7ad 255 in decimal so  
-    if (result > 127) { //check el condition beta3et el hexa number tani keda
-    return 1;    
-}
-return 0;
-
+    // 0x100 is 256 in decimal aw 100000000 in binary 
+    if ((result & 0x100) != 0) {
+        return 1;
+    }
+    return 0;    
 }
 
 //result of operation is too small or too large tab3an to fit in the avalible bits
@@ -38,12 +37,17 @@ int  compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op){
         return -1;
     }
 
+     if (op == ADD) {
+
+
     // for cases like 100+100=200  and -100+-100=-200 w el range of 8 bit is -128 to 128 
     if (val1 > 0 && val2 > 0 && result < 0){
         return 1 ;
     }
      if (val1 < 0 && val2 < 0 && result > 0) {
         return 1;
+    }
+    return 0;
     }
     if (val1 > 0 && val2 < 0 && result < 0) {
         return 1;
