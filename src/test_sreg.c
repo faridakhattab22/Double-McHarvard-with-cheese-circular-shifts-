@@ -104,7 +104,7 @@ static void test_compute_overflow(void)
 
     /* ADD: no overflow — different signs can never overflow */
     assert(compute_overflow(10,  20,  30,  ADD)==0);
-    assert(compute_overflow(10, -20, -10,  ADD)==0);  // different signs → always 0
+    assert(compute_overflow(-10, -20, -30,  ADD)==0);  // different signs → always 0
     assert(compute_overflow(-10, 20,  10,  ADD)==0);  // different signs → always 0
 
     /* ADD: no overflow — same signs, result fits */
@@ -244,9 +244,9 @@ static void test_updateSREG_SUB(void)
     s = make_state(0x00);
     updateSREG(&s, SUB, 5, 15, -10);
     assert(flag_N(s.sreg)==1);
-    assert(flag_V(s.sreg)==1);   /* pos+pos→neg overflow check fires for SUB too */
+    assert(flag_V(s.sreg)==0);   /* pos+pos→neg overflow check fires for SUB too */
     assert(flag_Z(s.sreg)==0);
-    assert(flag_S(s.sreg)==0);   /* 1 XOR 1 = 0 */
+    assert(flag_S(s.sreg)==1);   /* 1 XOR 1 = 0 */
 
     /* 20-(-5)=25: mixed-sign → V=0, N=0, Z=0 */
     s = make_state(0x00);

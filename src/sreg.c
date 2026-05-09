@@ -36,11 +36,13 @@ int compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op){
     if (op != ADD && op != SUB) {
         return -1;
     }
-    
+    if (op == ADD){
         // same sign operands → overflow if result has opposite sign
         if (val1 > 0 && val2 > 0 && result < 0) return 1;
         if (val1 < 0 && val2 < 0 && result > 0) return 1;
-        
+        return 0;
+    } 
+
     // SUB: only different signs can overflow
     // pos - neg → result should be more positive, if negative then overflow
     if (val1 > 0 && val2 < 0 && result < 0) return 1;
@@ -49,7 +51,7 @@ int compute_overflow(int8_t val1, int8_t val2, int8_t result, Opcode op){
     return 0;
 }
 
-}
+
 // flag N bit 2
 int  compute_negative(int8_t result){
     if (result < 0) {
