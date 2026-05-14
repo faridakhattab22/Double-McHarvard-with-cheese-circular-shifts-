@@ -30,11 +30,11 @@ int main(void) {
 
     // ── Load program ────────────────────────────────────────────────
     //const char *filename = "src/program_1.asm";
-    //const char *filename = "program_sreg_test.asm";
-    // const char *filename = "program_1.asm";
+   // const char *filename = "program_sreg_test.asm";
+    const char *filename = "program_1.asm";
     // const char *filename = "program_3.asm";
     // const char *filename = "program_beqz_taken.asm"; 
-    const char *filename = "program_jr_basic.asm"; 
+    //const char *filename = "program_jr_basic.asm"; 
     // const char *filename = "program_beqz_not_taken.asm"; 
    // const char *filename = "program_hazard.asm"; 
 
@@ -100,6 +100,12 @@ print_stage_IF(&state);
         print_all_registers(&state);
         print_sreg(&state);
         print_data_memory(&state);
+
+        //NOTEE !!!: deh ana "farah adel" 7atetha 3shan el ui LAW 3amla moshkela sheloha 3adi bas tell me 2blha 
+        // ── Manual Step ──
+        printf("\n[STEP] Cycle %d complete. Press Enter to continue...", state.clock_cycle);
+        fflush(stdout);
+        getchar();
 
         state.clock_cycle++;
     }
