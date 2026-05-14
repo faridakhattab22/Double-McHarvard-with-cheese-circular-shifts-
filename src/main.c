@@ -13,8 +13,6 @@
 
 
 int main(void) {
-
-    // ── Initialization ───────────────────────────────────────────────
     ProcessorState state;
     memset(&state, 0, sizeof(ProcessorState));
 
@@ -28,33 +26,30 @@ int main(void) {
     state.ex_out.dest_reg = -1;
     state.clock_cycle     = 1;
 
-    // ── Load program ────────────────────────────────────────────────
     //const char *filename = "src/program_1.asm";
-   // const char *filename = "program_sreg_test.asm";
+    // const char *filename = "program_sreg_test.asm";
     const char *filename = "program_1.asm";
     // const char *filename = "program_3.asm";
     // const char *filename = "program_beqz_taken.asm"; 
     //const char *filename = "program_jr_basic.asm"; 
     // const char *filename = "program_beqz_not_taken.asm"; 
-   // const char *filename = "program_hazard.asm"; 
-
+    // const char *filename = "program_hazard.asm"; 
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
         fprintf(stderr, "Error: failed to load '%s'\n", filename);
         return 1;
     }
-state.instr_count = loaded;
+
+    state.instr_count = loaded;
     printf("Loaded %d instructions from %s\n", loaded, filename);
-    // 🔥 ADD THIS LINE HERE
     print_instruction_memory(&state);
 
-    // ── Pipeline Loop ───────────────────────────────────────────────
     while (state.pc < state.instr_count || state.if_id.valid ||state.id_ex.valid 
         //||
            //state.ex_out.valid ||
            //state.clock_cycle == 1
-           )   // 🔥 ensures first cycle runs
+           )
     {
         print_cycle_header(state.clock_cycle);
 
@@ -64,37 +59,34 @@ state.instr_count = loaded;
         //  stage_ID(&state);
         // print_stage_ID(&state);
 
-        // ✅ YOUR PART: register change logging
         if (state.ex_out.valid && state.ex_out.dest_reg != -1) {
             log_register_change(state.ex_out.dest_reg,
                                 state.ex_out.result,
                                 state.clock_cycle);
         }
 
-        // ── ID Stage ────────────────────────────────────────────────
         stage_ID(&state);
         print_stage_ID(&state);
+        
         // stage_EX(&state);
         // print_stage_EX(&state);
-        // ── IF Stage ────────────────────────────────────────────────
         // if (state.pc < state.instr_count)
         //     stage_IF(&state);
         // else
         //     state.if_id.valid = 0;
 
         // print_stage_IF(&state);
-        // ── IF Stage DEBUG ──────────────────────────────────────────
-// printf("DEBUG: before IF → pc=%d\n", state.pc);
+        // printf("DEBUG: before IF → pc=%d\n", state.pc);
 
-if (state.pc < state.instr_count)
-    stage_IF(&state);
-else
-    state.if_id.valid = 0;
+        if (state.pc < state.instr_count)
+            stage_IF(&state);
+        else
+            state.if_id.valid = 0;
 
-// printf("DEBUG: after IF → pc=%d, valid=%d\n",
-    //    state.pc, state.if_id.valid);
+        // printf("DEBUG: after IF → pc=%d, valid=%d\n",
+        //    state.pc, state.if_id.valid);
 
-print_stage_IF(&state);
+        print_stage_IF(&state);
 
         // ── Full State Print ────────────────────────────────────────
         print_all_registers(&state);

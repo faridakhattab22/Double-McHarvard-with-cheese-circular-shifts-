@@ -359,7 +359,6 @@ void stage_EX(ProcessorState *state){
         case BEQZ: {
             short int target = compute_beqz_target(state->id_ex.pc, state->id_ex.imm);
 
-            // 🔥 DEBUG ADDED
             // printf("DEBUG BRANCH (BEQZ): pc=%d imm=%d target=%d r1_val=%d\n",
             //        state->id_ex.pc,
             //        state->id_ex.imm,
@@ -383,7 +382,7 @@ void stage_EX(ProcessorState *state){
         case JR: {
             short int target = compute_jr_target(state->id_ex.val_r1, state->id_ex.val_r2);
 
-            // 🔥 DEBUG ADDED
+           
             printf("DEBUG BRANCH (JR): r1=%d r2=%d target=%d\n",
                    state->id_ex.val_r1,
                    state->id_ex.val_r2,
