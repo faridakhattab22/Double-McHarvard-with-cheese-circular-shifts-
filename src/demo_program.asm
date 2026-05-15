@@ -1,0 +1,11 @@
+LDI R1, 50      
+LDI R2, -60     
+ADD R1, R2      
+LDI R3, 10      
+ADD R1, R3
+LDI R4, 120
+SB R4, 5(R0)
+LB R5, 5(R0)
+BEQZ R1, 2
+LDI R10, 99
+LDI R11, 77
