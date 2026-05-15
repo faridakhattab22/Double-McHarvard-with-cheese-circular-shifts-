@@ -4,9 +4,9 @@
 
 /* C(carry) updated by add 
 V(overflow) by add , sub 
-N(negative) by kolo  add,sub,mul,and,or,sal,sar
+N(negative) by add,sub,mul,and,or,sal,sar
 S(sign) add w sub 
-Z(zero) by kolo  add ,sub,mul,and,or,sal,sar
+Z(zero) by add ,sub,mul,and,or,sal,sar
 */
 //chcp 65001 | Out-Null ; .\e.exe
 

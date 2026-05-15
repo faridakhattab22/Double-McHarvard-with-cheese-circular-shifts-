@@ -27,13 +27,15 @@ int main(void) {
     state.clock_cycle     = 1;
 
     //const char *filename = "src/program_1.asm";
-    // const char *filename = "program_sreg_test.asm";
-    // const char *filename = "program_1.asm";
+   // const char *filename = "program_sreg_test.asm";
+   // const char *filename = "program_1.asm";
     // const char *filename = "program_3.asm";
     // const char *filename = "program_beqz_taken.asm"; 
     //const char *filename = "program_jr_basic.asm"; 
-    const char *filename = "program_beqz_not_taken.asm"; 
-    // const char *filename = "program_hazard.asm"; 
+    // const char *filename = "program_beqz_not_taken.asm"; 
+   // const char *filename = "program_hazard.asm"; 
+   const char *filename = "demo_program.asm";
+
 
     int loaded = parse_file(filename, &state);
     if (loaded <= 0) {
