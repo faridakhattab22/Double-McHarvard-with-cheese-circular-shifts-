@@ -82,12 +82,10 @@ void write_data_Mem(ProcessorState *state, short int addr, uint8_t value){
     }
     state->data_mem[addr] = value;
 
-    // ✅ YOUR ADDITION: log BEFORE writing
     if (state->data_mem[addr] != value) {
         log_memory_change(addr, value, state->clock_cycle);
     }
 
-    // original logic (DO NOT CHANGE)
 }
 /* --- Instruction memory (byte-addressable, 1024 × 16-bit) --- */
 void    write_inst_Mem(ProcessorState *state, short int addr, short int value){ // mmkn t7tagoha f el parsing f elawel

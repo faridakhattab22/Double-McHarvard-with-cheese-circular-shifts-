@@ -33,7 +33,6 @@ int parse_file(const char *filename, ProcessorState *state) {
         printf("Encoded value: ");
         print_binary(instr);
 
-        // 🔥 DEBUG: show raw stored instruction
         // printf("PARSER DEBUG: stored instr[%d] = %d\n", count, instr);
 
         state->instr_mem[count++] = instr;
@@ -122,7 +121,6 @@ short int encode_instruction(const char *line) {
         int r1 = atoi(op1 + 1);
         int imm = atoi(op2);
 
-        // 🔥 DEBUG
         printf("PARSER DEBUG (I): opcode=%d r1=%d imm=%d\n", op, r1, imm);
 
         if ((op == SAL || op == SAR) && imm < 0) {
