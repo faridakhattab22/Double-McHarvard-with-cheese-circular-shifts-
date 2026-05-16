@@ -45,7 +45,6 @@ void stage_IF(ProcessorState *state) {
         return;
     }
 
-    // ✅ FIX: directly read full 16-bit instruction
     state->if_id.instruction = state->instr_mem[current_pc];
 
     state->if_id.pc = current_pc;
