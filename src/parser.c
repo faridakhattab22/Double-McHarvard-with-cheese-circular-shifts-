@@ -33,7 +33,7 @@ int parse_file(const char *filename, ProcessorState *state) {
         printf("Encoded value: ");
         print_binary(instr);
 
-        // printf("PARSER DEBUG: stored instr[%d] = %d\n", count, instr);
+
 
         state->instr_mem[count++] = instr;
     }
@@ -105,8 +105,7 @@ short int encode_instruction(const char *line) {
         int r1 = atoi(op1 + 1);
         int r2 = atoi(op2 + 1);
 
-        // 🔥 DEBUG
-        // printf("PARSER DEBUG (R): opcode=%d r1=%d r2=%d\n", op, r1, r2);
+
 
         if (r1 < 0 || r1 > 63 || r2 < 0 || r2 > 63) {
             printf("Error: Invalid register in line: %s\n", line);
