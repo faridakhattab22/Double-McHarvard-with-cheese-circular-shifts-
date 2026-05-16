@@ -5,7 +5,6 @@
 #include "structures.h"
 #include "sreg.h"
 
-// ─── Cycle Header ────────────────────────────────────────────────────────────
 
 void print_cycle_header(int cycle) {
     printf("\n╔══════════════════════════════════════╗\n");
@@ -13,7 +12,6 @@ void print_cycle_header(int cycle) {
     printf(  "╚══════════════════════════════════════╝\n");
 }
 
-// ─── Stage Printers ──────────────────────────────────────────────────────────
 
 void print_stage_IF(ProcessorState *state) {
     printf("  [IF] ");
@@ -33,7 +31,6 @@ void print_stage_ID(ProcessorState *state) {
         return;
     }
 
-    // print opcode name
     const char *opname = "???";
     switch (state->id_ex.opcode) {
         case ADD:  opname = "ADD";  break;
@@ -80,7 +77,6 @@ void print_stage_EX(ProcessorState *state) {
     }
 }
 
-// ─── Change Logging ──────────────────────────────────────────────────────────
 
 void log_register_change(int reg_index, int8_t new_value, int cycle) {
     // printf("  [WB,  cycle %d] R%d ← %d (0x%02X)\n",
@@ -92,7 +88,6 @@ void log_memory_change(short int address, uint8_t new_value, int cycle) {
            cycle, (unsigned short)address, new_value, new_value);
 }
 
-// ─── Final State Dump ────────────────────────────────────────────────────────
 
 void print_all_registers(ProcessorState *state) {
     printf("\n┌─────────────────────────────────────┐\n");
@@ -113,11 +108,11 @@ void print_all_registers(ProcessorState *state) {
 void print_sreg(ProcessorState *state) {
     uint8_t s = state->sreg;
     printf("\n[SREG] Z=%d  S=%d  N=%d  V=%d  C=%d\n",
-           (s & FLAG_Z_MASK) ? 1 : 0,   // bit 0
-           (s & FLAG_S_MASK) ? 1 : 0,   // bit 1
-           (s & FLAG_N_MASK) ? 1 : 0,   // bit 2
-           (s & FLAG_V_MASK) ? 1 : 0,   // bit 3
-           (s & FLAG_C_MASK) ? 1 : 0);  // bit 4
+           (s & FLAG_Z_MASK) ? 1 : 0,   
+           (s & FLAG_S_MASK) ? 1 : 0,   
+           (s & FLAG_N_MASK) ? 1 : 0,   
+           (s & FLAG_V_MASK) ? 1 : 0,   
+           (s & FLAG_C_MASK) ? 1 : 0);  
 }
 
 void print_instruction_memory(ProcessorState *state) {
@@ -140,7 +135,7 @@ void print_data_memory(ProcessorState *state) {
     printf(  "│  Addr    │  Value                   │\n");
     printf(  "├──────────┼──────────────────────────┤\n");
     for (int i = 0; i < 2048; i++) {
-        if (state->data_mem[i] != 0) { // only print non-zero
+        if (state->data_mem[i] != 0) { 
             printf("│  0x%04X  │  %-3u (0x%02X)             │\n",
                    i, state->data_mem[i], state->data_mem[i]);
         }

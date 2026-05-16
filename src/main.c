@@ -55,7 +55,6 @@ int main(void) {
     {
         print_cycle_header(state.clock_cycle);
 
-        // ── EX Stage ────────────────────────────────────────────────
         stage_EX(&state);
         print_stage_EX(&state);
         //  stage_ID(&state);
@@ -85,18 +84,13 @@ int main(void) {
         else
             state.if_id.valid = 0;
 
-        // printf("DEBUG: after IF → pc=%d, valid=%d\n",
-        //    state.pc, state.if_id.valid);
 
         print_stage_IF(&state);
 
-        // ── Full State Print ────────────────────────────────────────
         print_all_registers(&state);
         print_sreg(&state);
         print_data_memory(&state);
 
-        //NOTEE !!!: deh ana "farah adel" 7atetha 3shan el ui LAW 3amla moshkela sheloha 3adi bas tell me 2blha 
-        // ── Manual Step ──
         printf("\n[STEP] Cycle %d complete. Press Enter to continue...", state.clock_cycle);
         fflush(stdout);
         getchar();
@@ -104,7 +98,6 @@ int main(void) {
         state.clock_cycle++;
     }
 
-    // ── Final State ────────────────────────────────────────────────
     printf("\n════════════════════════════════════════\n");
     printf("  Simulation complete — %d cycles\n", state.clock_cycle - 1);
     printf("════════════════════════════════════════\n");
